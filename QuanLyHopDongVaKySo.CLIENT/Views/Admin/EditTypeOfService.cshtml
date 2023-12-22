@@ -1,0 +1,141 @@
+﻿@model QuanLyHopDongVaKySo.CLIENT.ViewModels.VMListTOS
+@{
+    Layout = "_AdminLayout";
+}
+<style>
+    .loading {
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        background: rgba(0, 0, 0, 0.479);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+        .loading img {
+            width: 7rem;
+        }
+</style>
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                <li class="breadcrumb-item"> <a>Quản lý loại hình dịch vụ và kĩ thuật</a></li>
+                <li class="breadcrumb-item active" aria-current="page"> Danh sách dịch vụ</li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">CHỈNH SỬA DỊCH VỤ</h1>
+        <div class="row justify-content-between">
+            <a class="col-md-2 button-design" asp-controller="Admin" asp-action="ListTypeOfService">
+                <i class="ph-bold ph-arrow-left"></i>
+                QUAY LẠI
+            </a>
+        </div>
+    </div>
+    <div class="mt-5">
+        <form class="row justify-content-around" style=" margin: 0 auto;" method="post" asp-action="UpdateTOSAction" asp-controller="Admin">
+            <div class="col-md-5">
+                <div class="box1 row justify-content-between g-3 " style=" max-height: 800px;overflow-y: scroll; height:500px;">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">ID</label>
+                        <input class="form-control" id="inputName" placeholder="Id" readonly asp-for="PutTOS.TOS_ID">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Tên loại dịch vụ</label>
+                        <input class="form-control" id="inputName" asp-for="PutTOS.ServiceName" required>
+                        <span class="text-danger" asp-validation-for="PutTOS.ServiceName"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputName" class="form-label fw-bold">Giá</label>
+                        <input class="form-control" type="number" step="0.5" asp-for="PutTOS.Price" required>
+                        <span class="text-danger" asp-validation-for="PutTOS.Price"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Đơn vị thời gian</label>
+                        <input class="form-control" id="inputName" asp-for="PutTOS.PerTime" required>
+                        <span class="text-danger" asp-validation-for="PutTOS.PerTime"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputGender" class="form-label fw-bold">Hợp đồng mẫu</label>
+                        <select style="background-color: #F3F3F3;" required class="form-control" asp-for="PutTOS.TContractID">
+                            <option value="" disabled selected>...chọn mẫu hợp đồng</option>
+                            @foreach (var c in Model.TemplateContracts)
+                            {
+                                <option value="@c.TContactID">@c.TContractName</option>
+                            }
+                        </select>
+                        <span class="text-danger" asp-validation-for="PutTOS.TContractID"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputGender" class="form-label fw-bold">Biên bản lắp đặt mẫu</label>
+                        <select style="background-color: #F3F3F3;" required class="form-control" asp-for="PutTOS.TMinuteID">
+                            <option value="" disabled selected>...chọn mẫu biên bản lắp đặt</option>
+                            @foreach (var m in Model.TemplateMinutes)
+                            {
+                                <option value="@m.TMinuteID">@m.TMinuteName</option>
+                            }
+                        </select>
+                        <span class="text-danger" asp-validation-for="PutTOS.TMinuteID"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="mb-3 mr-1 form-label fw-bold" for="Status" asp-for="PutTOS.isHidden">Trạng thái: </label>
+                        <div>
+                            <input type="radio" class="btn-check " id="false" asp-for="PutTOS.isHidden" value="false" autocomplete="off" required>
+                            <label class="btn btn-sm btn-outline-success text-light" id="false-label" for="false">Hiển thị</label>
+
+                            <input type="radio" class="btn-check " id="true" asp-for="PutTOS.isHidden" value="true" autocomplete="off" required>
+                            <label class="btn btn-sm btn-outline-danger text-light" id="true-label" for="true">Ẩn</label>
+                        </div>
+                    </div>
+                    <div class="col-md-7" style="margin:auto; padding: 20px 0;">
+                        <div class="loading" id="loading">
+                            <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+                        </div>
+                        <button class="add_cus" type="submit" onclick="updatePosition()">
+                            LƯU THAY ĐỔI
+                          
+                        </button>
+                    </div>
+                </div>
+            </div>
+            @**@
+        </form>
+
+    </div>
+</div>
+
+
+<script>
+    const iconLoading = document.getElementById("loading");
+
+    const showLoading = () => {
+        iconLoading.style.display = "flex";
+    };
+
+    const hideLoading = () => {
+        iconLoading.style.display = "none";
+    };
+
+    const updatePosition = () => {
+        showLoading(); // Show loading spinner when the button is clicked
+
+        // You can perform additional logic here before or after the form submission
+        // For example, submit the form programmatically
+        document.querySelector('form').submit();
+
+        // If you want to prevent the form from submitting immediately, you can remove the form submission line
+
+        // Hide loading spinner after the form submission is complete
+        setTimeout(() => {
+            hideLoading(); // Hide loading icon after some time (replace this with your actual logic)
+        }, 1000);
+    };
+</script>

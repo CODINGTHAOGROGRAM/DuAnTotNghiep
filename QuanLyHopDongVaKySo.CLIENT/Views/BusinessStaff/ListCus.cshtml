@@ -1,0 +1,164 @@
+﻿@model List<QuanLyHopDongVaKySo.CLIENT.Models.Customer>
+@{
+}
+
+<style>
+    #loading-spinner {
+        display: none;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        position: fixed;
+        top: 100%;
+        left: 100%;
+        transform: translate(-50%, -50%);
+    }
+
+    #loading-spinner > img {
+        width: 10rem;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex rounded">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item"> <a >Trang chủ</a></li>
+                <li class="breadcrumb-item"><a >Quản lý khách hàng</a></li>
+                <li class="breadcrumb-item active" aria-current="page"> Danh sách khách hàng</li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">TẤT CẢ DANH SÁCH</h1>
+        <div class="row justify-content-between">
+            <input type="search" id="searchInput" class="src" placeholder="Tìm kiếm khách hàng" />
+            <a class="button-save col-md-2 offset-md-7" asp-action="AddCus" asp-controller="BusinessStaff">
+                THÊM KHÁCH HÀNG MỚI
+                <i class="ph-bold ph-plus"></i>
+            </a>
+        </div>
+    </div>
+    <div class="row mx-auto bg-white mt-4 rounded">
+        <div class="listTable">
+            <table class="table display" id="myTable">
+                <thead>
+                    <tr style="color: #8B909A;">
+                        <th></th>
+                        <th scope="col">ID</th>
+                        <th scope="col">HỌ VÀ TÊN</th>
+                        <th scope="col">SĐT</th>
+                        <th scope="col">EMAIL</th>
+                        <th scope="col">ĐỊA CHỈ</th>
+                        <th scope="col">TRẠNG THÁI HOẠT ĐỘNG</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                     @foreach (var cus in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="row action">
+                                    <a asp-action="EditCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId"><i class="ph-bold ph-note-pencil"></i></a>
+                                </div>
+                            </td>
+                            <th scope="row">@cus.CustomerId.ToString().Substring(0,8)</th>
+                            <td>@cus.FullName</td>
+                            <td>@cus.PhoneNumber</td>
+                            <td>@cus.Email</td>
+                            <td>@cus.Address</td>
+                            @if (@cus.IsLocked)
+                            {
+                               <td>
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 5px; height: 5px; background-color: red; border-radius: 50%; margin-right: 10px;"></div>
+                                        <div>Khóa</div>
+                                    </div>
+                                </td>
+                            
+                            }
+                            else
+                            {
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 5px; height: 5px; background-color: #00C9A7; border-radius: 50%; margin-right: 10px;"></div>
+                                        <div>Bình thường</div>
+                                    </div>
+                                </td>
+                           
+                            }
+                            <td>
+                                <a asp-action="DetailsCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId" onclick="handleLinkClick(event)">Chi tiết</a>
+                            </td>
+                        </tr>
+                    } 
+                </tbody>
+            </table>
+            <div id="loading-spinner">
+                <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function handleLinkClick(event) {
+        document.getElementById('loading-spinner').style.display = 'block';
+    }
+
+    $(document).ready(function () {
+        // Khởi tạo DataTable
+        $('#myTable').DataTable({
+            "searching": false,
+            "info": false,
+            "lengthMenu": [10, 25, 50, 100],
+            "pageLength": 25,
+            "language": {
+                "decimal": "",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Sau",
+                    "previous": "Trước"
+                },
+                "lengthMenu": "Hiển thị _MENU_ dữ liệu",
+                "emptyTable": "Không có dữ liệu"
+            }
+        });
+    });
+
+
+    // tìm kiếm
+    document.addEventListener('DOMContentLoaded', function () {
+        // Lấy đối tượng ô tìm kiếm và bảng
+        var input = document.getElementById('searchInput');
+        var table = document.getElementById('myTable');
+
+        // Thêm sự kiện 'input' cho ô tìm kiếm
+        input.addEventListener('input', function () {
+            // Gọi hàm filterTable khi người dùng nhập liệu
+            filterTable();
+        });
+
+        function filterTable() {
+            // Lấy giá trị từ ô tìm kiếm và chuyển đổi thành chữ thường
+            var filter = input.value.toLowerCase();
+
+            // Lấy tất cả các dòng trong tbody của bảng
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            // Lặp qua từng dòng và ẩn hoặc hiển thị dựa trên từ khóa tìm kiếm
+            for (var i = 0; i < rows.length; i++) {
+                var rowData = rows[i].innerText.toLowerCase();
+                if (rowData.includes(filter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    });
+</script>

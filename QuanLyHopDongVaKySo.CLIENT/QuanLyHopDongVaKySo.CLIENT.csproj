@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <Compile Remove="wwwroot\assetsEmail\**" />
+    <Compile Remove="wwwroot\php\files\**" />
+    <Compile Remove="wwwroot\TempSignatures\**" />
+    <Compile Remove="wwwroot\TMinuteImg\**" />
+    <Content Remove="wwwroot\assetsEmail\**" />
+    <Content Remove="wwwroot\php\files\**" />
+    <Content Remove="wwwroot\TempSignatures\**" />
+    <Content Remove="wwwroot\TMinuteImg\**" />
+    <EmbeddedResource Remove="wwwroot\assetsEmail\**" />
+    <EmbeddedResource Remove="wwwroot\php\files\**" />
+    <EmbeddedResource Remove="wwwroot\TempSignatures\**" />
+    <EmbeddedResource Remove="wwwroot\TMinuteImg\**" />
+    <None Remove="wwwroot\php\files\**" />
+    <None Remove="wwwroot\TempSignatures\**" />
+    <None Remove="wwwroot\TMinuteImg\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Syncfusion.EJ2.MVC5" Version="23.1.36" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuanLyHopDongVaKySo_API\QuanLyHopDongVaKySo_API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SuperSignature.Net.Standard">
+      <HintPath>bin\SuperSignature.Net.Standard.dll</HintPath> 
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Avatars\" />
+    <Folder Include="wwwroot\ContractImage\" />
+    <Folder Include="wwwroot\MinuteImage\" />
+    <Folder Include="wwwroot\PContractImage\" />
+    <Folder Include="wwwroot\PMinuteImage\" />
+    <Folder Include="wwwroot\SignatureImages\" />
+    <Folder Include="wwwroot\StampImage\" />
+    <Folder Include="wwwroot\TContractImage\" />
+    <Folder Include="wwwroot\TempFile\" />
+    <Folder Include="wwwroot\TempSignature\" />
+    <Folder Include="wwwroot\TMinuteImage\" />
+  </ItemGroup>
+
+</Project>

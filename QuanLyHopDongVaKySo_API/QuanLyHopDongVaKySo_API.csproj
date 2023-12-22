@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>5e3c1c28-dfc1-4739-bc8b-5dc2e525fd7a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AppData\TMinutes\**" />
+    <Compile Remove="Models\ViewDeletes\**" />
+    <Content Remove="AppData\Avatars\**" />
+    <Content Remove="AppData\ContractImage\**" />
+    <Content Remove="AppData\PendingContracts\**" />
+    <Content Remove="AppData\PendingMinutes\**" />
+    <Content Remove="AppData\TMinutes\**" />
+    <Content Remove="Models\ViewDeletes\**" />
+    <EmbeddedResource Remove="AppData\Avatars\**" />
+    <EmbeddedResource Remove="AppData\ContractImage\**" />
+    <EmbeddedResource Remove="AppData\PendingContracts\**" />
+    <EmbeddedResource Remove="AppData\PendingMinutes\**" />
+    <EmbeddedResource Remove="AppData\TMinutes\**" />
+    <EmbeddedResource Remove="Models\ViewDeletes\**" />
+    <None Remove="AppData\Avatars\**" />
+    <None Remove="AppData\ContractImage\**" />
+    <None Remove="AppData\PendingContracts\**" />
+    <None Remove="AppData\PendingMinutes\**" />
+    <None Remove="AppData\TMinutes\**" />
+    <None Remove="Models\ViewDeletes\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle" Version="1.8.9" />
+    <PackageReference Include="Dapper" Version="2.1.24" />
+    <PackageReference Include="Ghostscript.NET" Version="1.2.3.1" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NSwag.Annotations" Version="13.20.0" />
+    <PackageReference Include="PdfiumViewer" Version="2.13.0" />
+    <PackageReference Include="QRCoder" Version="1.4.1" />
+    <PackageReference Include="RestSharp" Version="110.2.0" />
+    <PackageReference Include="Spire.PDF" Version="9.10.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.12" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AppData\DContracts\" />
+    <Folder Include="AppData\PFXCertificates\" />
+    <Folder Include="AppData\TContracts\" />
+    <Folder Include="AppData\PContracts\" />
+    <Folder Include="AppData\SignatureImages\" />
+	  <Folder Include="AppData\Font\" />
+
+  </ItemGroup>
+</Project>

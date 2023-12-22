@@ -1,0 +1,429 @@
+﻿@using Newtonsoft.Json;
+@{
+    string employeeContext = Context.Request.HttpContext.Session.GetString("EmployeeContext");
+    Employee employee = JsonConvert.DeserializeObject<Employee>(employeeContext);
+    string avatar;
+    if (employee.Image == null)
+    {
+        if (employee.Gender == 1)
+        {
+            avatar = "Avatars/blank_avatar_man.png";
+        }
+        else
+        {
+            avatar = "Avatars/blank_avatar_woman.png";
+        }
+    }
+    else
+    {
+        avatar = employee.Image;
+    }
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <title>TECHSEAL - Quản lý hợp đồng và chữ ký số</title>
+    <link rel="icon" href="/2.ico" type="image/x-icon">
+    
+    <!--css - cho từng page -->
+    <link href="~/Admin_Resource/css/vendors/Css_Index.css?v=2" rel="stylesheet" type="text/css">
+
+    <!-- Vendors styles-->
+    <link rel="stylesheet" href="~/Admin_Resource/vendors/simplebar/css/simplebar.css">
+    <link rel="stylesheet" href="~/Admin_Resource/css/vendors/simplebar.css">
+    <!-- Main styles for this application-->
+    <link href="~/Admin_Resource/css/style.css" rel="stylesheet">
+    <!-- We use those styles to show code examples, you should remove them in your application.-->
+    <link href="~/Admin_Resource/css/examples.css" rel="stylesheet">
+   @*  <link href="~/Admin_Resource/vendors/_coreui/chartjs/css/coreui-chartjs.css" rel="stylesheet"> *@
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@@phosphor-icons/web"></script>
+    @* Thư viện phân trang trong table  *@
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+
+
+
+    <style>
+        .loading {
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.479);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .loading img {
+            width: 7rem;
+        }
+           
+    </style>
+
+</head>
+<body style="font-family: 'Roboto', sans-serif;  background-color: #dbe2f4;">
+    <div class="loading" id="loading">
+        <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+    </div>
+    <header style="background-color:#001529; position:fixed; width:100%;z-index:9999; top:auto;">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow">
+            <div class="container-fluid">
+                <div class="logo">
+                    <img style="width:40px;" src="~/Resource/Image/LOGO_WITHOUT_BG/2.png" />
+                    <a style="color:white; font-weight:bold;" class="navbar-brand" asp-action="Index1" asp-controller="Admin" onclick="Loading()">TECHSEAL</a>
+                </div>
+                <div class="Search_All">
+                    <i class="ph-bold ph-magnifying-glass"></i>
+                    <input type="text" placeholder="Search.." />
+                </div>
+            </div>
+            <ul class="horizontal-list" style="list-style: none; display:flex; margin-bottom: 0; color:white;">
+                <li>
+                    <a>
+                        <i class="ph-bold ph-bell"></i>
+                    </a>
+
+                </li>
+                <li>
+                    <a>
+                        <i class="ph-bold ph-moon"></i>
+                    </a>
+                </li>
+                <li>
+                    <img src="~/@Html.Raw(avatar)" style="width: 40px; height: 40px; border-radius: 100%;" />
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="sidebar sidebar-dark sidebar-fixed" id="sidebar" style="margin-top:50px;">
+        <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
+            <li class="nav-title">QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG</li>
+            <li class="nav-item">
+                <a class="nav-link" asp-action="ListCusAccount" asp-controller="Admin" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Danh sách khách hàng
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-action="ListEmpAccount" asp-controller="Admin" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Danh sách nhân viên
+                </a>
+            </li>
+            <li class="nav-title">QUẢN LÝ VỊ TRÍ</li>
+            <li class="nav-group">
+                <a class="nav-link nav-group-toggle">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-object-group"></use>
+                    </svg> Quản lý vai trò
+                </a>
+                <ul class="nav-group-items">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="ListRole" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Danh sách vai trò
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-group">
+                <a class="nav-link nav-group-toggle">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-object-group"></use>
+                    </svg> Quản lý chức danh
+                </a>
+                <ul class="nav-group-items">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="ListPosition" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Danh sách chức danh
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-title">QUẢN LÝ LOẠI DỊCH VỤ VÀ KĨ THUẬT</li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admin" asp-action="ListTypeOfService" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Danh sách dịch vụ
+                </a>
+            </li>
+            <li class="nav-title">QUẢN LÝ THÔNG TIN KÝ SỐ</li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admin" asp-action="ListPFXCertificate" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Danh sách chứng chỉ
+                </a>
+            </li>
+            <li class="nav-title">GIÁM ĐỐC</li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Director" asp-action="Contracts_PendingApproval" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Hợp đồng chờ duyệt
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Director" asp-action="Contracts_Approved" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Hợp đồng đã duyệt
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Director" asp-action="Contracts_rejected" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Hợp đồng từ chối
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Director" asp-action="Contracts_Active" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Hợp đồng hoạt động
+                </a>
+            </li>
+            <li class="nav-title">NHÂN VIÊN KINH DOANH</li>
+            <li class="nav-group">
+                <a class="nav-link nav-group-toggle">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-object-group"></use>
+                    </svg> Quản lý hợp đồng
+                </a>
+                <ul class="nav-group-items">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="BusinessStaff" asp-action="Contracts_PendingApproval" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Yên cầu lắp đặt
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="BusinessStaff" asp-action="ContractListWaitSign" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Hợp đồng chờ khách ký
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="BusinessStaff" asp-action="ContractListRefuse" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Hợp đồng từ chối duyệt
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-group">
+                <a class="nav-link nav-group-toggle">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-object-group"></use>
+                    </svg> Hợp đồng - Biên bản mẫu
+                </a>
+                <ul class="nav-group-items">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="BusinessStaff" asp-action="ListContractFormPage" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Danh sách mẫu hợp đồng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="BusinessStaff" asp-action="ListMinuteFormPage" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Danh sách mẫu biên bản
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="BusinessStaff" asp-action="ContractFormPage" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Thêm mẫu hợp đồng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="BusinessStaff" asp-action="MinuteFormPage" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Thêm mẫu biên bản
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Director" asp-action="Contracts_Active" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-list "></use>
+                    </svg> Hợp đồng hoạt động
+                </a>
+            </li>
+
+            <li class="nav-title">NHÂN VIÊN LẮP ĐẶT</li>
+            <li class="nav-group">
+                <a class="nav-link nav-group-toggle">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-object-group"></use>
+                    </svg> Quản lý yêu cầu lắp
+                </a>
+                <ul class="nav-group-items">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="InstallStaff" asp-action="Record_Install_Require" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Danh sách yêu cầu lắp
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="InstallStaff" asp-action="Record_Install_Pendding" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Biên bản chờ lắp
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="InstallStaff" asp-action="Record_Install_Complete" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Biên bản đã lắp
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-group">
+                <a class="nav-link nav-group-toggle">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-object-group"></use>
+                    </svg> Quản lý thiết bị lắp
+                </a>
+                <ul class="nav-group-items">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="InstallStaff" asp-action="ListTypeOfService" onclick="Loading()">
+                            <span class="nav-icon"></span>
+                            Danh sách dịch vụ
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-title">LỊCH SỬ </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admin" asp-action="HistoryOperation" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-history "></use>
+                    </svg> Lịch sử thao tác
+                </a>
+            </li>
+            <li class="nav-title">TÀI KHOẢN</li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admin" asp-action="Index" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-user"></use>
+                    </svg> Cá nhân
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Verify" asp-action="Logout" onclick="Loading()">
+                    <svg class="nav-icon">
+                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-account-logout"></use>
+                    </svg> Đăng xuất
+                </a>
+            </li>
+        </ul>
+        <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>
+    </div>
+    <div class="wrapper d-flex flex-column min-vh-100">
+        <div class="body flex-grow-1 px-3" style="margin-top:70px;">
+            <div class="container-fluid">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+
+                </main>
+
+            </div>
+        </div>
+    </div>
+    <script src="~/Admin_Resource/vendors/simplebar/js/simplebar.min.js"></script>
+    <script src="/Admin_Resource/vendors/_coreui/coreui/js/coreui.bundle.min.js"></script>
+    <script src="/Admin_Resource/vendors/_coreui/utils/js/coreui-utils.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   @*  <script src="/Admin_Resource/vendors/_coreui/coreui/js/coreui.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+    @* <script src="~/Admin_Resource/vendors/_coreui/coreui/js/coreui.bundle.min.js"></script>
+    <script src="~/Admin_Resource/vendors/simplebar/js/simplebar.min.js"></script>
+    <!-- Plugins and scripts required by this view-->
+    <script src="~/Admin_Resource/vendors/chart.js/js/chart.min.js"></script>
+    <script src="~/Admin_Resource/vendors/_coreui/chartjs/js/coreui-chartjs.js"></script>
+    <script src="~/Admin_Resource/vendors/_coreui/utils/js/coreui-utils.js"></script>
+    <!-- CoreUI and necessary plugins-->
+   *@
+    @* <script src="~/Admin_Resource/js/main.js" ></script>   *@
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+<script type="text/javascript">
+    const iconLoading = document.getElementById("loading");
+
+    const showLoading = () => {
+        iconLoading.style.display = "flex";
+    };
+
+    const hideLoading = () => {
+        iconLoading.style.display = "none";
+    };
+
+    const Loading = () => {
+        showLoading(); // Show loading spinner when the button is clicked
+
+        // You can perform additional logic here before or after the form submission
+        // For example, submit the form programmatically
+        document.querySelector('form').submit();
+
+        // If you want to prevent the form from submitting immediately, you can remove the form submission line
+
+        // Hide loading spinner after the form submission is complete
+        setTimeout(() => {
+            hideLoading(); // Hide loading icon after some time (replace this with your actual logic)
+        }, 1000);
+    };
+</script>
+@if (TempData["SweetType"] != null && TempData["SweetIcon"] != null && TempData["SweetTitle"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var sweetData = {
+                title: '@TempData["SweetTitle"]',
+                text: '@TempData["SweetText"]',
+                icon: '@TempData["SweetIcon"]'
+            };
+
+            Swal.fire({
+                title: sweetData.title,
+                text: sweetData.text,
+                icon: sweetData.icon,
+                showCancelButton: false,
+                allowOutsideClick: false,
+                confirmButtonColor: "green",
+                confirmButtonText: "Ok"
+            }).then(function () {
+                // Handle any additional logic after the SweetAlert is closed.
+            });
+        });
+    </script>
+}

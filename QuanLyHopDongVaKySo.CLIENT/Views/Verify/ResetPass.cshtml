@@ -1,0 +1,323 @@
+﻿@model QuanLyHopDongVaKySo_API.ViewModels.ForgotPassword 
+@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/2.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- ICONS -->
+    <script src="https://unpkg.com/@@phosphor-icons/web"></script>
+    <style>
+        .form_login {
+            display: flex;
+            height: 100vh;
+        }
+
+        .side,
+        .banner {
+            width: 50%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+
+        .side {
+            flex-direction: column;
+        }
+       
+        .top img {
+            width: 366px;
+            height: 366px;
+        }
+
+        .form {
+            width: 486px;
+            height: 520px;
+            border-radius: 46px;
+            background-color: rgba( 217, 217, 217, 0.3);
+        }
+
+        h3 {
+            display: flex;
+            height: 123px;
+            flex-direction: column;
+            justify-content: center;
+            color: #0f172a;
+            text-align: center;
+            font-family: Montserrat;
+            font-size: 40px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            margin: 0 auto;
+            opacity: 0.3;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100vh;
+            background-color: #9D9D9D;
+            z-index: 999;
+            opacity: 0.2;
+        }
+
+        div[class="mb-3"] {
+            max-width: 400px;
+            margin: 0 auto;
+            color: #0f172a;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+        }
+
+        div[class="row justify-content-between"] {
+            max-width: 400px;
+            margin: 0 auto;
+            padding-top: 10px;
+            align-items: center;
+            color: #0f172a;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            opacity: 0.3;
+        }
+
+        div[class="mb-3"] > button {
+            width: 400px;
+            margin: 0 auto;
+            height: 50px;
+            margin-top: 10px;
+            border-radius: 10px;
+            background: #6FB1FC;
+            color: #FFFF;
+            font-weight: bold;
+            border: none;
+        }
+        div[class="mb-3"] > button > a{
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        div[class="mb-3"] > label {
+            opacity: 0.3;
+        }
+
+        div[class="mb-3"] input {
+            border-radius: 15px;
+            background: #D9D9D9;
+            height: 50px;
+        }
+
+        .otp-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .col-md-6 a{
+             margin: 10px;
+             display: flex;
+             cursor: pointer ;
+             text-decoration:underline;
+        }
+
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form_login">
+        <div class="overlay"></div>
+        <div class="banner">
+            <img src="~/Resource/Image/Background_Login.png" />
+        </div>
+        <div class="side">
+            <div class="top">
+                <img src="~/Resource/Image/LOGO_WITHOUT_BG/2.png" />
+            </div>
+            <form asp-controller="Verify" asp-action="Login" method="post">
+                <div class="form">
+                    <h3>CẤP LẠI MẬT KHẨU</h3>
+                    <div class="mb-3">
+                        <label for="formGroupExampleInput" class="form-label">EMAIL</label>
+                        <input type="email" class="form-control" id="inputEmail" placeholder="abc@gmail.com" required asp-for="Email">
+                        <span class="text-danger" asp-validation-for="Email"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="formGroupExampleInput2" class="form-label">MÃ OTP</label>
+                        <div class="otp-container">
+                            <input id="inputOtp1" class="otp-input" type="text" maxlength="1" oninput="handleInput(this, 2)">
+                            <input id="inputOtp2" class="otp-input" type="text" maxlength="1" oninput="handleInput(this, 3)">
+                            <input id="inputOtp3" class="otp-input" type="text" maxlength="1" oninput="handleInput(this, 4)">
+                            <input id="inputOtp4" class="otp-input" type="text" maxlength="1" oninput="handleInput(this, 5)">
+                            <input id="inputOtp5" class="otp-input" type="text" maxlength="1" oninput="handleInput(this, 6)">
+                            <input id="inputOtp6" class="otp-input" type="text" maxlength="1" oninput="handleInput(this, 7)">
+                        </div>
+                        <script>
+                            function handleInput(input, nextInputIndex) {
+                                const maxLength = parseInt(input.getAttribute('maxlength'), 10);
+                                const inputValue = input.value;
+
+                                if (inputValue.length === maxLength) {
+                                    const nextInput = document.querySelector(`.otp-input:nth-child(${nextInputIndex})`);
+
+                                    if (nextInput) {
+                                        nextInput.focus();
+                                    }
+                                } else if (inputValue.length === 0) {
+                                    const previousInputIndex = nextInputIndex - 2;
+                                    const previousInput = document.querySelector(`.otp-input:nth-child(${previousInputIndex})`);
+
+                                    if (previousInput) {
+                                        previousInput.focus();
+                                    }
+                                }
+                            }
+                        </script>
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="row justify-content-around" style="color:cornflowerblue;width: 450px;margin: auto;">
+                        <div class="mb-3" style="padding:unset; color: cornflowerblue; cursor:pointer;">
+                            <a id="myButton" onclick="handleClick(event)">[Lấy mã OTP]</a>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button onclick="resetPassword()">
+                            ĐẶT LẠI MẬT KHẨU
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</html>
+<script>
+    let isButtonDisabled = false;
+
+    function handleClick(event) {
+        const button = document.getElementById('myButton');
+        if (!isButtonDisabled) {
+            const countdownSpan = document.createElement('span');
+            countdownSpan.className = 'countdown';
+            button.appendChild(countdownSpan);
+
+            disableButtonForSeconds(180, countdownSpan);
+            button.style.cursor = 'not-allowed';
+        }
+
+        event.preventDefault();
+        var email = {
+                Email: $('#inputEmail').val()
+            };
+        console.log(JSON.stringify(email));
+            $.ajax({
+                url: '@Url.Action("GetOTP")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(email),
+                success: function (result) {
+                    if (!result.success) {
+                        
+                    
+                    }
+                },
+                error: function () {
+                    console.error('Lỗi khi gửi yêu cầu.');
+                }
+            });
+            
+    }
+   
+    function disableButtonForSeconds(seconds, countdownSpan) {
+        isButtonDisabled = true;
+        document.getElementById('myButton').classList.add('disabled');
+
+        let secondsRemaining = seconds;
+
+        const countdownInterval = setInterval(() => {
+            const minutes = Math.floor(secondsRemaining / 60);
+            const remainingSeconds = secondsRemaining % 60;
+
+            if (secondsRemaining <= 0) {
+                clearInterval(countdownInterval);
+                isButtonDisabled = false;
+                document.getElementById('myButton').classList.remove('disabled');
+                document.getElementById('myButton').style.cursor = 'pointer';
+                countdownSpan.remove();
+            } else {
+                countdownSpan.textContent = ` (${minutes}p ${remainingSeconds}s)`;
+                secondsRemaining--;
+            }
+        }, 1000);
+    }
+
+
+    function resetPassword() {
+        var comfirmOTP =
+            $('#inputOtp1').val() +
+            $('#inputOtp2').val() +
+            $('#inputOtp3').val() +
+            $('#inputOtp4').val() +
+            $('#inputOtp5').val() +
+            $('#inputOtp6').val();
+
+        $.ajax({
+            url: '@Url.Action("ResetPassword")',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(comfirmOTP),
+            success: function (result) {
+                if (!result.success) {
+                    // Replace alert with SweetAlert success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Mật khẩu mới đã được tạo',
+                        text: 'Chúng tôi đã tạo một mật khẩu mới và đang gửi đến email của bạn.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    }).then(function () {
+                        var redirectToUrl = '@Url.Action("Index", "Verify")';
+                        window.location.href = redirectToUrl;
+                    });
+                }
+            },
+            error: function () {
+                // Replace alert with SweetAlert error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi khi gửi yêu cầu',
+                    text: 'Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại sau.'
+                });
+            }
+        });
+    }
+
+
+</script>

@@ -1,0 +1,96 @@
+﻿@model List<QuanLyHopDongVaKySo_API.Models.OperationHistoryEmp>
+
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex rounded">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Lịch sử thao tác</li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">Tất cả lịch sử thao tác</h1>
+        <div class="row">
+            <input type="search" id="searchInput" style="margin-left: 10px;" placeholder="Tìm kiếm..." />
+        </div>
+    </div>
+    <div class="row bg-white my-auto mt-4 mx-auto">
+        <div class="listTable" style="max-height:700px; overflow-y:scroll;">
+            <table class="table display" id="myTable">
+                <thead>
+                    <tr style="color: #8B909A;">
+                        <th scope="col">ID</th>
+                        <th scope="col">NGÀY</th>
+                        <th scope="col">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th scope="row">@item.HistoryID</th>
+                            <td>@item.Date</td>
+                            <td>@item.OperationName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Khởi tạo DataTable
+        $('#myTable').DataTable({
+            "searching": false,
+            "info": false,
+            "lengthMenu": [10, 25, 50, 100],
+            "pageLength": 25,
+            "order": [[0, 'desc']],
+            "language": {
+                "decimal": "",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Sau",
+                    "previous": "Trước"
+                },
+                "lengthMenu": "Hiển thị _MENU_ dữ liệu",
+                "emptyTable": "Không có dữ liệu"
+            }
+        });
+    });
+
+
+    // tìm kiếm
+    document.addEventListener('DOMContentLoaded', function () {
+        // Lấy đối tượng ô tìm kiếm và bảng
+        var input = document.getElementById('searchInput');
+        var table = document.getElementById('myTable');
+
+        // Thêm sự kiện 'input' cho ô tìm kiếm
+        input.addEventListener('input', function () {
+            // Gọi hàm filterTable khi người dùng nhập liệu
+            filterTable();
+        });
+
+        function filterTable() {
+            // Lấy giá trị từ ô tìm kiếm và chuyển đổi thành chữ thường
+            var filter = input.value.toLowerCase();
+
+            // Lấy tất cả các dòng trong tbody của bảng
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            // Lặp qua từng dòng và ẩn hoặc hiển thị dựa trên từ khóa tìm kiếm
+            for (var i = 0; i < rows.length; i++) {
+                var rowData = rows[i].innerText.toLowerCase();
+                if (rowData.includes(filter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    });
+</script>

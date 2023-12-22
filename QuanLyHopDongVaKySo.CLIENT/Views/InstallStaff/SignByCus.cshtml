@@ -1,0 +1,254 @@
+﻿@model QuanLyHopDongVaKySo.CLIENT.ViewModels.VMSignByStaff
+@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment _hostingEnvironment
+
+@{
+    string folderPath = System.IO.Path.Combine(_hostingEnvironment.WebRootPath, "PMinuteImage"); // + thêm ID của contract
+
+    string folderItem = System.IO.Path.Combine(folderPath, Model.PMinute.PendingMinuteId.ToString());
+
+    string[] imageFiles = Directory.GetFiles(folderItem);
+
+    string userRole = Context.Request.HttpContext.Session.GetString("Role");
+
+}
+
+<style>
+    #loading-spinner {
+        display: none;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        position: fixed;
+        top: 100%;
+        left: 100%;
+        transform: translate(-50%, -50%);
+    }
+
+    #loading-spinner > img {
+        width: 10rem;
+    }
+       
+</style> 
+
+<!-- ssss-->
+<script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+<!-- SuperSignature : Script (required) -->
+<script language="javascript" type="text/javascript" src="~/Scripts/ss.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<div class="container-fluid" style="height: 100vh;">
+    @if(userRole == "Admin")
+    {
+        Layout = "_AdminLayout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex rounded">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a>Nhân viên lắp đặt</a></li>
+                    <li class="breadcrumb-item"><a>Quản lý yêu cầu lắp</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Biên bản đã nhận lắp</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">KÝ XÁC NHẬN</h1>
+        </div>
+    }
+    else
+    {
+        Layout = "_Layout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a>Quản lý yêu cầu lắp</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Biên bản đã nhận lắp</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">KÝ XÁC NHẬN</h1>
+        </div>
+
+    }
+    <div class="row mt-4 bg-white rounded" style="margin:auto;">
+        <div class="col-5">
+            <div class="changPassForm">
+                <h4 class="typeHead">Xác nhận ký của khách hàng</h4>
+                <div class="row g-3 p-3" style="margin:auto 5px;">
+                    @await Component.InvokeAsync("SignControl")
+                    <hr />
+                    <div class="form-inline">
+                        <input type="button" id="btnUndo" class="button-design" onclick="UndoSignature('ctlSignature');" value="Hoàn tác" />&nbsp;
+                        <input type="button" id="btnClear" class="button-delete" onclick="ClearSignature('ctlSignature');" value="Xóa" />&nbsp;
+                        <input type="button" id="btnSave" class="button-save" onclick="ValidateSign();" value="Xác Nhận Ký" />&nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-7 bg-white" style="min-width: 800px;">
+            <div class="showFile">
+                <div class="row justify-content-between" style="margin:auto;">
+                    <button class="custom-file-upload col-1" data-bs-toggle="modal" data-bs-target="#ShowContract" style="width:30px; height:30px;">
+                        <i class="ph-bold ph-frame-corners" style="font-size:30px; margin: auto;"></i>
+                    </button>
+                </div>
+                <div id="myCarousel" class="carousel slide" style=" width:100%;height: 750px;">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active ">
+                            <img src="~/Resource/Image/LOGO/1.png" alt="Hình ảnh" width="100%" height="750" />
+                        </div>
+                        @foreach (var imgPath in imageFiles)
+                        {
+                            <div class="carousel-item" style="max-height: 800px;overflow-y: scroll;">
+                                <img src="@Url.Content("~/PMinuteImage/"+Model.PMinute.PendingMinuteId+ "/" + System.IO.Path.GetFileName(imgPath))" alt="Hình ảnh" width="100%" />
+                            </div>
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" style="margin: auto;background-color: black;font-size: 100px;width: 50px;height: 100px;">
+                        <span class="carousel-control-prev-icon" aria-hidden="true" style="width:20px; height:20px;"></span>
+                        <span class="visually-hidden" >Previous</span>
+                    </button>
+                    <button style="margin: auto;background-color: black;font-size: 100px; width: 50px;height: 100px;" class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true" style="width:20px; height:20px;"></span>
+                        <span class="visually-hidden" >Next</span>
+                    </button>
+                </div>
+
+                <!--Show hợp đồng to-->
+                <!-- Modal -->
+                <div class="modal fade" id="ShowContract" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="myCarouselModal" class="carousel slide">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active ">
+                                            <img src="~/Resource/Image/LOGO/1.png" alt="Hình ảnh" width="100%" />
+                                        </div>
+                                        @foreach (var imgPath in imageFiles)
+                                        {
+                                            <div class="carousel-item" style="max-height: 800px;overflow-y: scroll;">
+                                                <img src="@Url.Content("~/PMinuteImage/"+Model.PMinute.PendingMinuteId+ "/" +  System.IO.Path.GetFileName(imgPath))" alt="Hình ảnh" width="100%" />
+                                            </div>
+                                        }
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#myCarouselModal" data-bs-slide="prev" style="margin: auto;background-color: black;font-size: 100px;width: 50px;height: 100px;">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true" style="width:20px; height:20px;"></span>
+                                        <span class="visually-hidden" >Previous</span>
+                                    </button>
+                                    <button style="margin: auto;background-color: black;font-size: 100px; width: 50px;height: 100px;" class="carousel-control-next" type="button" data-bs-target="#myCarouselModal" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true" style="width:20px; height:20px;"></span>
+                                        <span class="visually-hidden" >Next</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="loading-spinner">
+        <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+    </div>
+
+</div>
+<script type="text/javascript">
+
+    document.getElementById('loading-spinner').style.display = 'none';
+
+    var statV = false;
+
+    function StatusBar() {
+        SignatureStatusBar('ctlSignature', statV);
+        statV = !statV; // toggle
+
+        // change status bar look dynamically
+        $('#ctlSignature_status').css({ "color": "orangered", "font-size": "12px", "font-weight": "bold", "float": "left" });
+    }
+
+    function ValidateSign() {
+
+        var isValid = ValidateSignature('ctlSignature');
+
+        if (!isValid) {
+            $('#ctlSignature').css("border", "2px dashed red");
+        }
+        else {
+            $('#ctlSignature').css("border", "2px dashed green");
+        }
+
+        if (isValid === true) {
+            SaveSign();
+        }
+    }
+
+    function SaveSign() {
+
+        document.getElementById('loading-spinner').style.display = 'block';
+
+        var btnSave = $("#btnSave");
+
+        btnSave.prop('disabled', true);
+
+        var ctlSignature = { Data: $("#ctlSignature_data").val(), Smooth: $("#ctlSignature_data_smooth").val() };
+
+        $.ajax({
+            url: "/InstallStaff/CustomerSign/",
+            data: JSON.stringify(ctlSignature),
+            contentType: "application/json",
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (!result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: 'Ký biên bản thành công!!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+
+                        var redirectToUrl = '@Url.Action("Record_Install_Complete")';
+                        window.location.href = redirectToUrl;
+                    });
+                }
+            },
+            error: function (textStatus, errorThrown) {
+                document.getElementById('loading-spinner').style.display = 'none';
+                alert();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: "Có lỗi xảy ra: " + JSON.stringify(textStatus) + " : " + errorThrown,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+
+        btnSave.prop('disabled', false);
+    }
+
+    function objctlSignature_status(success, points) {
+        $("#liStatus").html("<strong>Signature done? : " + success + ", with " + points + " points.</strong>");
+    }
+
+    $(document).ready(function () { StatusBar(); });
+
+
+
+    $(document).ready(function () {
+        $('#myCarousel').carousel({
+            interval: false
+        });
+    });
+</script>

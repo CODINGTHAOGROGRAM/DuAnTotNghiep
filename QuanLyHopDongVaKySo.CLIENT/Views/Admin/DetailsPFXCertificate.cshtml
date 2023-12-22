@@ -1,0 +1,103 @@
+﻿@model QuanLyHopDongVaKySo_API.Models.PFXCertificate
+
+@{
+    Layout = "_AdminLayout";
+}
+<link rel="stylesheet" type="text/css" href="~/Test/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="~/Test/css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                <li class="breadcrumb-item"> <a>Quản lý thông tin ký số</a></li>
+                <li class="breadcrumb-item active" aria-current="page"> Danh sách chứng chỉ</li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">CHI TIẾT CHỨNG CHỈ</h1>
+        <div class="row justify-content-between mx-auto ">
+            <a class="button-design col-md-2 mx-0" asp-action="ListPFXCertificate" asp-controller="Admin">
+                <i class="ph-bold ph-arrow-left"></i>
+                QUAY LẠI
+            </a>
+            <a class="button-save col-md-2 offset-md-7" asp-action="UpdateNotAfterPFX" asp-controller="Admin" asp-route-serial="@Model.Serial">
+                GIA HẠN
+                
+            </a>
+        </div>
+    </div>
+    <div style="margin-top: 40px;">
+        <section class="gallery min-vh-100">
+            <div class="container-lg">
+                <div class="row gy-4 row-cols-1 row-cols-sm-2 row-cols-md-3">
+                    <div class="col">
+                        Ảnh chữ ký 1                       
+                         @if (Model.ImageSignature1 != null)
+                            {
+                            <img src="~/@Model.ImageSignature1" alt="@Model.ImageSignature1" class="gallery-item" />
+                            }
+                            else
+                            {
+                            <img src="~/Resource/Image/empty.png"
+                                 class="gallery-item" alt="gallery" />
+                            }
+                    </div>
+                    <div class="col">
+                        Ảnh chữ ký 2
+                        @if (Model.ImageSignature2!= null)
+                        {
+                            <img src="~/@Model.ImageSignature2" alt="@Model.ImageSignature2" class="gallery-item" />
+                        }
+                        else
+                        {
+                            <img src="~/Resource/Image/empty.png"
+                                 class="gallery-item" alt="gallery" />
+                        }
+                    </div>
+                    <div class="col">
+                        Ảnh chữ ký 3
+                        @if (Model.ImageSignature3 != null)
+                        {
+                            <img src="~/@Model.ImageSignature3" alt="@Model.ImageSignature3" class="gallery-item" />
+                        }
+                        else
+                        {
+                            <img src="~/Resource/Image/empty.png"
+                                 class="gallery-item" alt="gallery" />
+                        }
+                    </div>
+                    <div class="col">
+                        Ảnh chữ ký 4
+                        @if (Model.ImageSignature4!= null)
+                        {
+                            <img src="~/@Model.ImageSignature4" alt="@Model.ImageSignature4" class="gallery-item" />
+                        }
+                        else
+                        {
+                            <img src="~/Resource/Image/empty.png"
+                                 class="gallery-item" alt="gallery" />
+                        }
+                    </div>
+                    <div class="col">
+                        Ảnh chữ ký 5
+                        @if (Model.ImageSignature5!= null)
+                        {
+                            <img src="~/@Model.ImageSignature5" alt="@Model.ImageSignature5" class="gallery-item" />
+                        }
+                        else
+                        {
+                            <img src="~/Resource/Image/empty.png"
+                                 class="gallery-item" alt="gallery"/>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script src="~/Test/js/bootstrap.bundle.min.js"></script>
+<script src="~/Test/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

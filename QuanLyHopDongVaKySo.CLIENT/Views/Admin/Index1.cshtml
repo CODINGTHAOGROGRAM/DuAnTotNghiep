@@ -1,0 +1,2034 @@
+﻿@model List<QuanLyHopDongVaKySo.CLIENT.Models.Customer>
+@{
+    Layout = "_AdminLayout";
+    string tk = Context.Request.HttpContext.Session.GetString("token");
+}
+<link href="/Admin_Resource/vendors/_coreui/chartjs/css/coreui-chartjs.css" rel="stylesheet">
+
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item active"> <a>Biểu đồ thống kê dữ liệu theo thời gian</a></li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">TẤT CẢ BIỂU ĐỒ</h1>
+
+    </div>
+    <div class="body flex-grow-1 px-3 mt-4">
+        <div class="container-lg">
+            <div class="row">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card mb-4 text-white bg-primary">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fs-4 fw-semibold">
+                                    <span>Tổng</span>
+                                    <span id="sumPContract"></span>
+                                </div>
+                                <div>Số lượng hợp đồng được tạo</div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-transparent text-white p-0"
+                                        type="button"
+                                        data-coreui-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <svg class="icon">
+                                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-options"></use>
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="#" onclick="callDataPContractByDate()">Ngày</a>
+                                    <a class="dropdown-item" href="#" onclick="callDataPContractByWeek()">Tuần</a>
+                                    <a class="dropdown-item" href="#" onclick="callDataPContractByMonth()">Tháng</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="c-chart-wrapper mt-3 mx-3"
+                             style="height: 70px"
+                             id="div-pContract-chart">
+                            <canvas class="chart" id="pContract-chart" height="70"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card mb-4 text-white bg-warning">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fs-4 fw-semibold">
+                                    <span>Tổng: </span>
+                                    <span id="sumPContractWaitCus"></span>
+                                </div>
+                                <div>Số lượng hợp đồng chờ khách ký</div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-transparent text-white p-0"
+                                        type="button"
+                                        data-coreui-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <svg class="icon">
+                                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-options"></use>
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="#" onclick="callDataPContractWaitCusByDate()">Ngày</a>
+                                    <a class="dropdown-item" href="#" onclick="callDataPContractWaitCusByWeek()">Tuần</a>
+                                    <a class="dropdown-item" href="#" onclick="callDataPContractWaitCusByMonth()">Tháng</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="div-pContractWaitCus-chart"
+                             class="c-chart-wrapper mt-3 mx-3"
+                             style="height: 70px">
+                            <canvas class="chart"
+                                    id="pContractWaitCus-chart"
+                                    height="70"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card mb-4 text-white bg-success">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fs-4 fw-semibold">
+                                    <span>Tổng: </span>
+                                    <span id="sumDContract"></span>
+                                </div>
+                                <div>Số lượng hợp đồng khách đã ký</div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-transparent text-white p-0"
+                                        type="button"
+                                        data-coreui-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <svg class="icon">
+                                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-options"></use>
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="#" onclick="callDataDContractByDate()">Ngày</a>
+                                    <a class="dropdown-item" href="#" onclick="callDataDContractByWeek()">Tuần</a>
+                                    <a class="dropdown-item" href="#" onclick="callDataDContractByMonth()">Tháng</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="div-dContract-chart"
+                             class="c-chart-wrapper mt-3 mx-3"
+                             style="height: 70px">
+                            <canvas class="chart" id="dContract-chart" height="70"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card mb-4 text-white bg-danger">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fs-4 fw-semibold">
+                                    <span>Tổng: </span>
+                                    <span id="sumUnEffect"></span>
+                                </div>
+                                <div>Số lượng hợp đã kết thúc</div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-transparent text-white p-0"
+                                        type="button"
+                                        data-coreui-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <svg class="icon">
+                                        <use xlink:href="/Admin_Resource/vendors/_coreui/icons/svg/free.svg#cil-options"></use>
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="#" onclick="callDataUnEffectByDate()">Ngày</a>
+                                    <a class="dropdown-item" href="#" onclick="callDataUnEffectByWeek()">Tuần</a>
+                                    <a class="dropdown-item" href="#" onclick="callDataUnEffectByMonth()">Tháng</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="div-dContractUneffect-chart"
+                             class="c-chart-wrapper mt-3 mx-3"
+                             style="height: 70px">
+                            <canvas class="chart"
+                                    id="dContractUneffect-chart"
+                                    height="70"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-->
+            </div>
+            <!-- /.row-->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title mb-0 typeHead">
+                                Biểu đồ theo dõi lượng khách hàng
+                            </h4>
+                        </div>
+                        <div class="btn-toolbar d-none d-md-block"
+                             role="toolbar"
+                             aria-label="Toolbar with buttons">
+                            <div class="btn-group btn-group-toggle mx-3"
+                                 data-coreui-toggle="buttons">
+                                <input class="btn-check"
+                                       id="option1"
+                                       type="radio"
+                                       name="options"
+                                       autocomplete="off"
+                                       checked="true" />
+                                <label class="btn btn-outline-secondary" for="option1">
+                                    Ngày
+                                </label>
+                                <input class="btn-check"
+                                       id="option2"
+                                       type="radio"
+                                       name="options"
+                                       autocomplete="off" />
+                                <label class="btn btn-outline-secondary" for="option2">
+                                    Tuần
+                                </label>
+                                <input class="btn-check"
+                                       id="option3"
+                                       type="radio"
+                                       name="options"
+                                       autocomplete="off" />
+                                <label class="btn btn-outline-secondary" for="option3">
+                                    Tháng
+                                </label>
+                            </div>
+                            <div id="datePickerContainer" style="display: block">
+                                <!-- Nội dung bạn muốn hiển thị -->
+                                <div class="mt-2">
+                                    <label class="fw-bold d-block mb-1" for="datepicker">Từ ngày:</label>
+                                    <input class="w-100 p-1 box-sizing-border-box" type="date" id="startDate" />
+                                </div>
+                                <div class="mt-2">
+                                    <label class="fw-bold d-block mb-1" for="datepicker">Đến ngày:</label>
+                                    <input class="w-100 p-1 box-sizing-border-box" type="date" id="endDate" />
+                                </div>
+                                <div class="mt-2">
+                                    <button onclick="callDataCustomerByDate()" class="button-design w-100 mx-auto">
+                                        Xem dữ liệu
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="weekPickerContainer" style="display: none">
+                                <!-- Nội dung bạn muốn hiển thị -->
+                                <div class="mt-2">
+                                    <label class="fw-bold d-block mb-1" for="weekpicker">Chọn tháng:</label>
+                                    <input class="w-100 p-1 box-sizing-border-box" type="month" id="weekpicker" />
+                                </div>
+                                <div class="mt-2">
+                                    <button onclick="callDataCustomerByWeek()" class="button-design w-100 mx-auto">
+                                        Xem dữ liệu
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="yearPickerContainer" style="display: none">
+                                <!-- Nội dung bạn muốn hiển thị -->
+                                <div class="mt-2">
+                                    <label class="fw-bold d-block mb-1" for="monthpicker">Chọn tháng:</label>
+                                    <input class="w-100 p-1 box-sizing-border-box" type="month" id="monthpicker" />
+                                </div>
+                                <div class="mt-2">
+                                    <button onclick="callDataCustomerByMonth()" class="button-design w-100 mx-auto">
+                                        Xem dữ liệu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div-client-chart"
+                         class="c-chart-wrapper"
+                         style="height: 300px; margin-top: 40px">
+                        <canvas class="chart" id="client-chart" height="300"></canvas>
+                    </div>
+                    <div id="countdown" class=" mt-2 fw-bold d-block mb-1 text-primary">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mx-auto bg-white mt-4 rounded">
+        <h4 class="mb-0 mt-2 typeHead">
+            Danh sách khách hàng
+        </h4>
+        <div class="listTable">
+            <table class="table display" id="myTable">
+                <thead>
+                    <tr style="color: #8B909A;">
+                        <th></th>
+                        <th scope="col">ID</th>
+                        <th scope="col">HỌ VÀ TÊN</th>
+                        <th scope="col">SĐT</th>
+                        <th scope="col">EMAIL</th>
+                        <th scope="col">ĐỊA CHỈ</th>
+                        <th scope="col">TRẠNG THÁI HOẠT ĐỘNG</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    @foreach (var cus in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="row action">
+                                    <a asp-action="EditCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId"><i class="ph-bold ph-note-pencil"></i></a>
+                                </div>
+                            </td>
+                            <th scope="row">@cus.CustomerId.ToString().Substring(0, 8)</th>
+                            <td>@cus.FullName</td>
+                            <td>@cus.PhoneNumber</td>
+                            <td>@cus.Email</td>
+                            <td>@cus.Address</td>
+                            @if (@cus.IsLocked)
+                            {
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 5px; height: 5px; background-color: red; border-radius: 50%; margin-right: 10px;"></div>
+                                        <div>Khóa</div>
+                                    </div>
+                                </td>
+
+                            }
+                            else
+                            {
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 5px; height: 5px; background-color: #00C9A7; border-radius: 50%; margin-right: 10px;"></div>
+                                        <div>Bình thường</div>
+                                    </div>
+                                </td>
+
+                            }
+                            <td>
+                                <a asp-action="DetailsCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId" onclick="handleLinkClick(event)">Chi tiết</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/Admin_Resource/vendors/_coreui/chartjs/js/coreui-chartjs.js"></script>
+<script  src="/Admin_Resource/vendors/chart.js/js/chart.min.js"></script>
+<script  src="/Admin_Resource/vendors/_coreui/utils/js/coreui-utils.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // Khởi tạo DataTable
+        $('#myTable').DataTable({
+            "searching": false,
+            "info": false,
+            "lengthMenu": [10, 25, 50, 100],
+            "pageLength": 25,
+            "language": {
+                "decimal": "",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Sau",
+                    "previous": "Trước"
+                },
+                "lengthMenu": "Hiển thị _MENU_ dữ liệu",
+                "emptyTable": "Không có dữ liệu"
+            }
+        });
+    });
+    
+    // Lấy JWT từ session
+    const jwtToken = '@Html.Raw(tk)';
+
+    // Thiết lập header Bearer
+    //const headers = new Headers();
+    //headers.append('Authorization', `Bearer ${jwtToken}`);
+
+    //const jwtToken =
+        //"eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZG8yNzI0NDNAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3MDI3NTMyOTl9.EnRBgZ6yA0gqG-caVE15GQqH4GFFiM9YHHXvUzHILKnoAKqkmdapXxfRQmTr34DHd2feKX7atOfJ1TiG-x3o9g";
+        //"eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZG8yNzI0NDNAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3MDI2NTU1NDV9.tIneUnKmWzLcIVX7sXsn-SGJiDozKgT_PD6zr2HtW-iiXeL_dBd_2cQWXromigYcRFYWyGxw5rA37pM_hn5KKA";
+    //"eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiY2hhbjk0MTcwQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6Ik5ow6JuIHZpw6puIGzhuq9wIMSR4bq3dCIsImV4cCI6MTcwMjQ3NDM5N30.jG0E4Rx6USK3ClhFBgmReWMbdEY1Hb08gUGvAh852mFD0N1Ihtkqi4tHnt9jrIryuU8bHiC3xy65veWgC8mulQ";
+    
+    // Thiết lập header Bearer
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${jwtToken}`);
+    headers.append("Content-Type", `application/json`);
+    headers.append("Access-Control-Allow-Origin", `*`);
+    headers.append("Access-Control-Allow-Methods", "POST,PATCH,OPTIONS,GET,PUT");
+
+
+    Chart.defaults.pointHitDetectionRadius = 1;
+    Chart.defaults.plugins.tooltip.enabled = false;
+    Chart.defaults.plugins.tooltip.mode = "index";
+    Chart.defaults.plugins.tooltip.position = "nearest";
+    Chart.defaults.plugins.tooltip.external = coreui.ChartJS.customTooltips;
+    Chart.defaults.defaultFontColor = "#646470";
+
+    //client chart
+    const option1 = document.getElementById("option1");
+    const option2 = document.getElementById("option2");
+    const option3 = document.getElementById("option3");
+    const datePickerContainer = document.getElementById("datePickerContainer");
+    const weekPickerContainer = document.getElementById("weekPickerContainer");
+    const yearPickerContainer = document.getElementById("yearPickerContainer");
+
+    option1.addEventListener("change", function () {
+        datePickerContainer.style.display = option1.checked ? "block" : "none";
+        weekPickerContainer.style.display = "none";
+        yearPickerContainer.style.display = "none";
+    });
+
+    option2.addEventListener("change", function () {
+        datePickerContainer.style.display = "none";
+        weekPickerContainer.style.display = option2.checked ? "block" : "none";
+        yearPickerContainer.style.display = "none";
+    });
+
+    option3.addEventListener("change", function () {
+        datePickerContainer.style.display = "none";
+        weekPickerContainer.style.display = "none";
+        yearPickerContainer.style.display = option3.checked ? "block" : "none";
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Khi trang được load, thiết lập giá trị mặc định cho startDate và endDate
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+
+        const currentDate = new Date();
+        const sevenDaysAgo = new Date(currentDate);
+        sevenDaysAgo.setDate(currentDate.getDate() - 7);
+
+        startDateInput.valueAsDate = sevenDaysAgo; // Giá trị mặc định là ngày hôm nay
+        endDateInput.valueAsDate = currentDate; // Giá trị mặc định là 7 ngày trước
+        callDataCustomerByDate();
+        callDataPContractByDate();
+        callDataDContractByDate();
+        callDataPContractWaitCusByDate();
+        callDataUnEffectByDate();
+    });
+
+
+    // customer
+    function callDataCustomerByDate() {
+        $("#client-chart").remove();
+        $("#div-client-chart").append(
+            '<canvas class="chart" id="client-chart" height="300"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountCustomerAddedByDate";
+        const startDateInput = document.getElementById("startDate").value;
+        const endDateInput = document.getElementById("endDate").value;
+
+        // Chuyển đổi chuỗi đầu vào thành đối tượng Date
+        const startDate = new Date(startDateInput);
+        const endDate = new Date(endDateInput);
+
+        const startDateFormat = startDate.toISOString().substring(0, 10);
+        const endDateFormat = endDate.toISOString().substring(0, 10);
+
+        const countdownElement = document.getElementById("countdown");
+
+        fetch(url + `?startDate=${startDateFormat}&endDate=${endDateFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalCustomersArray = [];
+                const enterpriseCustomersArray = [];
+                const individualCustomersArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalCustomersArray.push(item.totalCustomers);
+                    enterpriseCustomersArray.push(item.enterpriseCustomers);
+                    individualCustomersArray.push(item.individualCustomers);
+                });
+
+                const maxCustomers = Math.max(...totalCustomersArray);
+
+                const mainChart = new Chart(document.getElementById("client-chart"), {
+                    type: "bar",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: coreui.Utils.getStyle("--cui-info"),
+                                data: totalCustomersArray,
+                            },
+                            {
+                                label: "Cá nhân",
+                                backgroundColor: coreui.Utils.getStyle("--cui-success"),
+                                data: individualCustomersArray,
+                            },
+                            {
+                                label: "Doanh nghiệp",
+                                backgroundColor: coreui.Utils.getStyle("--cui-danger"),
+                                data: enterpriseCustomersArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                            },
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    drawOnChartArea: false,
+                                },
+                            },
+                            y: {
+                                ticks: {
+                                    beginAtZero: true,
+                                    maxTicksLimit: 5,
+                                    stepSize: Math.ceil(maxCustomers / 5),
+                                    max: maxCustomers,
+                                },
+                            },
+                        },
+
+
+                    },
+                });
+                // Ẩn thời gian đếm ngược khi dữ liệu đã được tải
+                // countdownElement.style.display = "none";
+               
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+                // Ẩn thời gian đếm ngược khi dữ liệu đã được tải
+                countdownElement.style.display = "none";
+            });
+    }
+
+    function callDataCustomerByWeek() {
+        $("#client-chart").remove();
+        $("#div-client-chart").append(
+            '<canvas class="chart" id="client-chart" height="300"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountCustomerAddedByWeek";
+        const month = document.getElementById("weekpicker").value;
+
+        // Chuyển đổi chuỗi đầu vào thành đối tượng Date
+        const monthConvert = new Date(month);
+
+        const monthFormat = monthConvert.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalCustomersArray = [];
+                const enterpriseCustomersArray = [];
+                const individualCustomersArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalCustomersArray.push(item.totalCustomers);
+                    enterpriseCustomersArray.push(item.enterpriseCustomers);
+                    individualCustomersArray.push(item.individualCustomers);
+                });
+
+                const maxCustomers = Math.max(...totalCustomersArray);
+
+                const mainChart = new Chart(document.getElementById("client-chart"), {
+                    type: "bar",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: coreui.Utils.getStyle("--cui-info"),
+                                data: totalCustomersArray,
+                            },
+                            {
+                                label: "Cá nhân",
+                                backgroundColor: coreui.Utils.getStyle("--cui-success"),
+                                data: individualCustomersArray,
+                            },
+                            {
+                                label: "Doanh nghiệp",
+                                backgroundColor: coreui.Utils.getStyle("--cui-danger"),
+                                data: enterpriseCustomersArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                            },
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    drawOnChartArea: false,
+                                },
+
+                            },
+                            y: {
+                                ticks: {
+                                    beginAtZero: true,
+                                    maxTicksLimit: 5,
+                                    stepSize: Math.ceil(maxCustomers / 5),
+                                    max: maxCustomers,
+                                },
+                            },
+                        },
+                    },
+
+                });
+               
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+               
+            });
+    }
+
+    function callDataCustomerByMonth() {
+        $("#client-chart").remove();
+        $("#div-client-chart").append(
+            '<canvas class="chart" id="client-chart" height="300"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountCustomerAddedByMonth";
+        const month = document.getElementById("monthpicker").value;
+
+        // Chuyển đổi chuỗi đầu vào thành đối tượng Date
+        const monthData = new Date(month);
+
+        const monthConvert = monthData.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthConvert}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalCustomersArray = [];
+                const enterpriseCustomersArray = [];
+                const individualCustomersArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalCustomersArray.push(item.totalCustomers);
+                    enterpriseCustomersArray.push(item.enterpriseCustomers);
+                    individualCustomersArray.push(item.individualCustomers);
+                });
+
+                const maxCustomers = Math.max(...totalCustomersArray);
+
+                const mainChart = new Chart(document.getElementById("client-chart"), {
+                    type: "bar",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: coreui.Utils.getStyle("--cui-info"),
+                                data: totalCustomersArray,
+                            },
+                            {
+                                label: "Cá nhân",
+                                backgroundColor: coreui.Utils.getStyle("--cui-success"),
+                                data: individualCustomersArray,
+                            },
+                            {
+                                label: "Doanh nghiệp",
+                                backgroundColor: coreui.Utils.getStyle("--cui-danger"),
+                                data: enterpriseCustomersArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                            },
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    drawOnChartArea: false,
+                                },
+                            },
+                            y: {
+                                ticks: {
+                                    beginAtZero: true,
+                                    maxTicksLimit: 5,
+                                    stepSize: Math.ceil(maxCustomers / 5),
+                                    max: maxCustomers,
+                                },
+                            },
+                        },
+
+                    },
+                });
+
+               
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+               
+            });
+    }
+
+    // Pcontract
+    function callDataPContractByDate() {
+        $("#pContract-chart").remove();
+        $("#div-pContract-chart").append(
+            ' <canvas class="chart" id="pContract-chart" height="70"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountPContractCreatedByDate";
+
+        const endDateInput = new Date();
+        const startDateInput = new Date(endDateInput);
+        startDateInput.setDate(endDateInput.getDate() - 7);
+
+        // Chuyển đổi chuỗi đầu vào thành đối tượng Date
+        const startDate = new Date(startDateInput);
+        const endDate = new Date(endDateInput);
+
+        const startDateFormat = startDate.toISOString().substring(0, 10);
+        const endDateFormat = endDate.toISOString().substring(0, 10);
+
+        fetch(url + `?startDate=${startDateFormat}&endDate=${endDateFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumPContract").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(document.getElementById("pContract-chart"), {
+                    type: "line",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: "transparent",
+                                borderColor: "rgba(255,255,255,.55)",
+                                pointBackgroundColor: coreui.Utils.getStyle("--cui-primary"),
+                                data: totalsArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                        },
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                            y: {
+                                min: Math.ceil(minValue / 2),
+                                max: Math.ceil(maxValue * 2),
+                                display: false,
+                                grid: {
+                                    display: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                        },
+                        elements: {
+                            line: {
+                                borderWidth: 1,
+                                tension: 0.4,
+                            },
+                            point: {
+                                radius: 4,
+                                hitRadius: 10,
+                                hoverRadius: 4,
+                            },
+                        },
+                    },
+                });
+               
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+               
+            });
+    }
+
+    function callDataPContractByWeek() {
+        $("#pContract-chart").remove();
+        $("#div-pContract-chart").append(
+            ' <canvas class="chart" id="pContract-chart" height="70"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountPContractCreatedByWeek";
+
+        const month = new Date();
+
+        var monthFormat = month.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumPContract").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(document.getElementById("pContract-chart"), {
+                    type: "line",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: "transparent",
+                                borderColor: "rgba(255,255,255,.55)",
+                                pointBackgroundColor: coreui.Utils.getStyle("--cui-primary"),
+                                data: totalsArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                        },
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                            y: {
+                                min: Math.ceil(minValue / 2),
+                                max: Math.ceil(maxValue * 2),
+                                display: false,
+                                grid: {
+                                    display: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                        },
+                        elements: {
+                            line: {
+                                borderWidth: 1,
+                                tension: 0.4,
+                            },
+                            point: {
+                                radius: 4,
+                                hitRadius: 10,
+                                hoverRadius: 4,
+                            },
+                        },
+                    },
+                });
+               
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+               
+            });
+    }
+
+    function callDataPContractByMonth() {
+        $("#pContract-chart").remove();
+        $("#div-pContract-chart").append(
+            ' <canvas class="chart" id="pContract-chart" height="70"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountPContractCreatedByMonth";
+
+        const month = new Date();
+
+        var monthFormat = month.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumPContract").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(document.getElementById("pContract-chart"), {
+                    type: "line",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: "transparent",
+                                borderColor: "rgba(255,255,255,.55)",
+                                pointBackgroundColor: coreui.Utils.getStyle("--cui-primary"),
+                                data: totalsArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                        },
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                            y: {
+                                min: Math.ceil(minValue / 2),
+                                max: Math.ceil(maxValue * 2),
+                                display: false,
+                                grid: {
+                                    display: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                        },
+                        elements: {
+                            line: {
+                                borderWidth: 1,
+                                tension: 0.4,
+                            },
+                            point: {
+                                radius: 4,
+                                hitRadius: 10,
+                                hoverRadius: 4,
+                            },
+                        },
+                    },
+                   
+                });
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+             
+            });
+    }
+
+    // PContractWait
+    function callDataPContractWaitCusByDate() {
+        $("#pContractWaitCus-chart").remove();
+        $("#div-pContractWaitCus-chart").append(
+            ' <canvas class="chart" id="pContractWaitCus-chart" height="70"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountPContractWaitCusByDate";
+
+        const endDateInput = new Date();
+        const startDateInput = new Date(endDateInput);
+        startDateInput.setDate(endDateInput.getDate() - 7);
+
+        // Chuyển đổi chuỗi đầu vào thành đối tượng Date
+        const startDate = new Date(startDateInput);
+        const endDate = new Date(endDateInput);
+
+        const startDateFormat = startDate.toISOString().substring(0, 10);
+        const endDateFormat = endDate.toISOString().substring(0, 10);
+
+        fetch(url + `?startDate=${startDateFormat}&endDate=${endDateFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                let sum = 0;
+                sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumPContractWaitCus").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(
+                    document.getElementById("pContractWaitCus-chart"),
+                    {
+                        type: "line",
+                        data: {
+                            labels: dateArray,
+                            datasets: [
+                                {
+                                    label: "Tổng",
+                                    backgroundColor: "transparent",
+                                    borderColor: "rgba(255,255,255,.55)",
+                                    pointBackgroundColor: coreui.Utils.getStyle("--cui-warning"),
+                                    data: totalsArray,
+                                },
+                            ],
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                            },
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                                y: {
+                                    min: Math.ceil(minValue / 2),
+                                    max: Math.ceil(maxValue * 2),
+                                    display: false,
+                                    grid: {
+                                        display: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                            },
+                            elements: {
+                                line: {
+                                    borderWidth: 1,
+                                    tension: 0.4,
+                                },
+                                point: {
+                                    radius: 4,
+                                    hitRadius: 10,
+                                    hoverRadius: 4,
+                                },
+                            },
+                        },
+                    }
+                );
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+    function callDataPContractWaitCusByWeek() {
+        $("#pContractWaitCus-chart").remove();
+        $("#div-pContractWaitCus-chart").append(
+            ' <canvas class="chart" id="pContractWaitCus-chart" height="70"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountPContractWaitCusByWeek";
+
+        const month = new Date();
+
+        var monthFormat = month.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                let sum = 0;
+                sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumPContractWaitCus").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(
+                    document.getElementById("pContractWaitCus-chart"),
+                    {
+                        type: "line",
+                        data: {
+                            labels: dateArray,
+                            datasets: [
+                                {
+                                    label: "Tổng",
+                                    backgroundColor: "transparent",
+                                    borderColor: "rgba(255,255,255,.55)",
+                                    pointBackgroundColor: coreui.Utils.getStyle("--cui-warning"),
+                                    data: totalsArray,
+                                },
+                            ],
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                            },
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                                y: {
+                                    min: Math.ceil(minValue / 2),
+                                    max: Math.ceil(maxValue * 2),
+                                    display: false,
+                                    grid: {
+                                        display: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                            },
+                            elements: {
+                                line: {
+                                    borderWidth: 1,
+                                    tension: 0.4,
+                                },
+                                point: {
+                                    radius: 4,
+                                    hitRadius: 10,
+                                    hoverRadius: 4,
+                                },
+                            },
+                        },
+                    }
+                );
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+    function callDataPContractWaitCusByMonth() {
+        $("#pContractWaitCus-chart").remove();
+        $("#div-pContractWaitCus-chart").append(
+            ' <canvas class="chart" id="pContractWaitCus-chart" height="70"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountPContractWaitCusByMonth";
+
+        const month = new Date();
+
+        var monthFormat = month.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                let sum = 0;
+                sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumPContractWaitCus").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(
+                    document.getElementById("pContractWaitCus-chart"),
+                    {
+                        type: "line",
+                        data: {
+                            labels: dateArray,
+                            datasets: [
+                                {
+                                    label: "Tổng",
+                                    backgroundColor: "transparent",
+                                    borderColor: "rgba(255,255,255,.55)",
+                                    pointBackgroundColor: coreui.Utils.getStyle("--cui-warning"),
+                                    data: totalsArray,
+                                },
+                            ],
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                            },
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                                y: {
+                                    min: Math.ceil(minValue / 2),
+                                    max: Math.ceil(maxValue * 2),
+                                    display: false,
+                                    grid: {
+                                        display: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                            },
+                            elements: {
+                                line: {
+                                    borderWidth: 1,
+                                    tension: 0.4,
+                                },
+                                point: {
+                                    radius: 4,
+                                    hitRadius: 10,
+                                    hoverRadius: 4,
+                                },
+                            },
+                        },
+                    }
+                );
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+    //Dcontract
+    function callDataDContractByDate() {
+        $("#dContract-chart").remove();
+        $("#div-dContract-chart").append(
+            ' <canvas class="chart" id="dContract-chart" height="70"></canvas>'
+        );
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountDContractCreatedByDate";
+
+        const endDateInput = new Date();
+        const startDateInput = new Date(endDateInput);
+        startDateInput.setDate(endDateInput.getDate() - 7);
+
+        // Chuyển đổi chuỗi đầu vào thành đối tượng Date
+        const startDate = new Date(startDateInput);
+        const endDate = new Date(endDateInput);
+
+        const startDateFormat = startDate.toISOString().substring(0, 10);
+        const endDateFormat = endDate.toISOString().substring(0, 10);
+
+        fetch(url + `?startDate=${startDateFormat}&endDate=${endDateFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumDContract").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(document.getElementById("dContract-chart"), {
+                    type: "line",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: "transparent",
+                                borderColor: "rgba(255,255,255,.55)",
+                                pointBackgroundColor: coreui.Utils.getStyle("--cui-success"),
+                                data: totalsArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                        },
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                            y: {
+                                min: Math.ceil(minValue / 2),
+                                max: Math.ceil(maxValue * 2),
+                                display: false,
+                                grid: {
+                                    display: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                        },
+                        elements: {
+                            line: {
+                                borderWidth: 1,
+                                tension: 0.4,
+                            },
+                            point: {
+                                radius: 4,
+                                hitRadius: 10,
+                                hoverRadius: 4,
+                            },
+                        },
+                    },
+                });
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+    function callDataDContractByWeek() {
+        $("#dContract-chart").remove();
+        $("#div-dContract-chart").append(
+            ' <canvas class="chart" id="dContract-chart" height="70"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountDContractCreatedByWeek";
+
+        const month = new Date();
+
+        var monthFormat = month.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumDContract").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(document.getElementById("dContract-chart"), {
+                    type: "line",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: "transparent",
+                                borderColor: "rgba(255,255,255,.55)",
+                                pointBackgroundColor: coreui.Utils.getStyle("--cui-success"),
+                                data: totalsArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                        },
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                            y: {
+                                min: Math.ceil(minValue / 2),
+                                max: Math.ceil(maxValue * 2),
+                                display: false,
+                                grid: {
+                                    display: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                        },
+                        elements: {
+                            line: {
+                                borderWidth: 1,
+                                tension: 0.4,
+                            },
+                            point: {
+                                radius: 4,
+                                hitRadius: 10,
+                                hoverRadius: 4,
+                            },
+                        },
+                    },
+                });
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+    function callDataDContractByMonth() {
+        $("#dContract-chart").remove();
+        $("#div-dContract-chart").append(
+            ' <canvas class="chart" id="dContract-chart" height="70"></canvas>'
+        );
+
+        const url =
+            "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountDContractCreatedByMonth";
+
+        const month = new Date();
+
+        var monthFormat = month.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumDContract").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(document.getElementById("dContract-chart"), {
+                    type: "line",
+                    data: {
+                        labels: dateArray,
+                        datasets: [
+                            {
+                                label: "Tổng",
+                                backgroundColor: "transparent",
+                                borderColor: "rgba(255,255,255,.55)",
+                                pointBackgroundColor: coreui.Utils.getStyle("--cui-success"),
+                                data: totalsArray,
+                            },
+                        ],
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                        },
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                            y: {
+                                min: Math.ceil(minValue / 2),
+                                max: Math.ceil(maxValue * 2),
+                                display: false,
+                                grid: {
+                                    display: false,
+                                },
+                                ticks: {
+                                    display: false,
+                                },
+                            },
+                        },
+                        elements: {
+                            line: {
+                                borderWidth: 1,
+                                tension: 0.4,
+                            },
+                            point: {
+                                radius: 4,
+                                hitRadius: 10,
+                                hoverRadius: 4,
+                            },
+                        },
+                    },
+                });
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+    //UnEffect
+    function callDataUnEffectByDate() {
+        $("#dContractUneffect-chart").remove();
+        $("#div-dContractUneffect-chart").append(
+            ' <canvas class="chart" id="dContractUneffect-chart" height="70"></canvas>'
+        );
+        const url = "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountUnEffectByDate";
+
+        const endDateInput = new Date();
+        const startDateInput = new Date(endDateInput);
+        startDateInput.setDate(endDateInput.getDate() - 7);
+
+        // Chuyển đổi chuỗi đầu vào thành đối tượng Date
+        const startDate = new Date(startDateInput);
+        const endDate = new Date(endDateInput);
+
+        const startDateFormat = startDate.toISOString().substring(0, 10);
+        const endDateFormat = endDate.toISOString().substring(0, 10);
+
+        fetch(url + `?startDate=${startDateFormat}&endDate=${endDateFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumUnEffect").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(
+                    document.getElementById("dContractUneffect-chart"),
+                    {
+                        type: "line",
+                        data: {
+                            labels: dateArray,
+                            datasets: [
+                                {
+                                    label: "Tổng",
+                                    backgroundColor: "transparent",
+                                    borderColor: "rgba(255,255,255,.55)",
+                                    pointBackgroundColor: coreui.Utils.getStyle("--cui-danger"),
+                                    data: totalsArray,
+                                },
+                            ],
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                            },
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                                y: {
+                                    min: Math.ceil(minValue / 2),
+                                    max: Math.ceil(maxValue * 2),
+                                    display: false,
+                                    grid: {
+                                        display: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                            },
+                            elements: {
+                                line: {
+                                    borderWidth: 1,
+                                    tension: 0.4,
+                                },
+                                point: {
+                                    radius: 4,
+                                    hitRadius: 10,
+                                    hoverRadius: 4,
+                                },
+                            },
+                        },
+                    }
+                );
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+    function callDataUnEffectByWeek() {
+        $("#dContractUneffect-chart").remove();
+        $("#div-dContractUneffect-chart").append(
+            ' <canvas class="chart" id="dContractUneffect-chart" height="70"></canvas>'
+        );
+
+        const url = "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountUnEffectByWeek";
+
+        const month = new Date();
+
+        var monthFormat = month.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumUnEffect").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(
+                    document.getElementById("dContractUneffect-chart"),
+                    {
+                        type: "line",
+                        data: {
+                            labels: dateArray,
+                            datasets: [
+                                {
+                                    label: "Tổng",
+                                    backgroundColor: "transparent",
+                                    borderColor: "rgba(255,255,255,.55)",
+                                    pointBackgroundColor: coreui.Utils.getStyle("--cui-danger"),
+                                    data: totalsArray,
+                                },
+                            ],
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                            },
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                                y: {
+                                    min: Math.ceil(minValue / 2),
+                                    max: Math.ceil(maxValue * 2),
+                                    display: false,
+                                    grid: {
+                                        display: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                            },
+                            elements: {
+                                line: {
+                                    borderWidth: 1,
+                                    tension: 0.4,
+                                },
+                                point: {
+                                    radius: 4,
+                                    hitRadius: 10,
+                                    hoverRadius: 4,
+                                },
+                            },
+                        },
+                    }
+                );
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+    function callDataUnEffectByMonth() {
+        $("#dContractUneffect-chart").remove();
+        $("#div-dContractUneffect-chart").append(
+            ' <canvas class="chart" id="dContractUneffect-chart" height="70"></canvas>'
+        );
+
+        const url = "https://techsealapi.azurewebsites.net/api/ExecProcedure/CountUnEffectByMonth";
+
+        const month = new Date();
+
+        var monthFormat = month.toISOString().substring(0, 10);
+
+        fetch(url + `?month=${monthFormat}`, {
+            method: "GET",
+            headers: headers,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const dateArray = [];
+                const totalsArray = [];
+
+                data.result.forEach((item) => {
+                    // Lưu giá trị từ các trường vào các mảng tương ứng
+                    dateArray.push(item.date);
+                    totalsArray.push(item.totals);
+                });
+
+                const sum = totalsArray.reduceRight((acc, cur) => acc + cur, 0);
+
+                document.getElementById("sumUnEffect").innerHTML = sum;
+
+                const maxValue = Math.max(...totalsArray);
+                const minValue = Math.min(...totalsArray);
+
+                const cardChart1 = new Chart(
+                    document.getElementById("dContractUneffect-chart"),
+                    {
+                        type: "line",
+                        data: {
+                            labels: dateArray,
+                            datasets: [
+                                {
+                                    label: "Tổng",
+                                    backgroundColor: "transparent",
+                                    borderColor: "rgba(255,255,255,.55)",
+                                    pointBackgroundColor: coreui.Utils.getStyle("--cui-danger"),
+                                    data: totalsArray,
+                                },
+                            ],
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                            },
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                                y: {
+                                    min: Math.ceil(minValue / 2),
+                                    max: Math.ceil(maxValue * 2),
+                                    display: false,
+                                    grid: {
+                                        display: false,
+                                    },
+                                    ticks: {
+                                        display: false,
+                                    },
+                                },
+                            },
+                            elements: {
+                                line: {
+                                    borderWidth: 1,
+                                    tension: 0.4,
+                                },
+                                point: {
+                                    radius: 4,
+                                    hitRadius: 10,
+                                    hoverRadius: 4,
+                                },
+                            },
+                        },
+                    }
+                );
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    }
+
+
+
+    // Đặt Interval để gọi lại hàm sau mỗi 2 hoặc 3 phút
+    const reloadInterval = 3 * 60 * 1000; // hoặc 3 * 60 * 1000
+    setInterval(callDataCustomerByDate, reloadInterval);
+    // Hiển thị thời gian đếm ngược
+    const countdownElement = document.getElementById("countdown");
+    countdownElement.style.display = "block";
+
+    // Hàm đếm ngược và load lại dữ liệu
+    function countdownAndLoadData(countdownTime) {
+        const minutes = Math.floor(countdownTime / 60);
+        const seconds = countdownTime % 60;
+
+        countdownElement.textContent = `Dữ liệu sẽ tự động làm mới sau ${minutes}:${seconds < 10 ? '0' : ''}${seconds} phút`;
+
+        if (countdownTime <= 0) {
+            // Load lại dữ liệu khi hết thời gian
+            callDataCustomerByDate();
+            // Reset thời gian đếm ngược
+            countdownTime = reloadInterval / 1000;
+        }
+
+        setTimeout(() => {
+            // Đệ quy để gọi lại chính nó sau mỗi giây
+            countdownAndLoadData(countdownTime - 1);
+        }, 1000);
+    }
+
+    // Bắt đầu đếm ngược và load lại dữ liệu
+    countdownAndLoadData(reloadInterval / 1000);
+</script> 
+

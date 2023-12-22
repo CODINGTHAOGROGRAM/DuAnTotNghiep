@@ -1,0 +1,490 @@
+﻿@model QuanLyHopDongVaKySo.CLIENT.ViewModels.VMListPFX
+
+@{
+    Layout = "_AdminLayout";
+}
+<style>
+    .loading {
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.479);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+        .loading img {
+            width: 7rem;
+        }
+</style>
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                <li class="breadcrumb-item"> <a>Quản lý thông tin ký số</a></li>
+                <li class="breadcrumb-item active" aria-current="page"> Danh sách chứng chỉ</li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">TẤT CẢ DANH SÁCH</h1>
+        <div class="row">
+            <input type="search" id="searchInput" class="src" placeholder="Tìm kiếm trong danh sách" style="margin:10px;" />
+        </div>
+    </div>
+    <div class="tab-container">
+        <div class="tab-button active" onclick="showTab('tab1')">Nhân viên </div>
+        <div class="tab-button" onclick="showTab('tab2')">Khách hàng</div>
+    </div>
+    <div class="tab-content active" id="tab1">
+        <div class="tab-container">
+            <div class="tab-button active" onclick="showTabChild('tab1-1')">Danh sách chứng chỉ số</div>
+            <div class="tab-button" onclick="showTabChild('tab1-2')">Danh sách chứng chỉ số sắp hết hạn</div>
+            <div class="tab-button" onclick="showTabChild('tab1-3')">Danh sách chứng chỉ số hết hạn</div>
+        </div>
+        <div class="tab-content active" id="tab1-1">
+            <div class="listTable">
+                <table class="table display" id="myTable1">
+                    <thead>
+                        <tr style="color: #8B909A;">
+                            <th scope="col">SERIAL</th>
+                            <th scope="col">NƯỜI SỞ HỮU</th>
+                            <th scope="col">TỔ CHỨC CUNG CẤP</th>
+                            <th scope="col">NGÀY HIỆU LỰC</th>
+                            <th scope="col">NGÀY HẾT HẠN</th>
+                            <th scope="col">HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider align-middle">
+                        @foreach (var nv in Model.PFXCertificates)
+                        {
+                            if (nv.IsEmployee)
+                            {
+                                <tr>
+                                    <th>@nv.Serial</th>
+                                    @foreach (var emp in Model.Employees)
+                                    {
+                                        if (emp.SerialPFX == nv.Serial)
+                                        {
+                                            <td><a asp-action="DetailsEmpAccount" asp-controller="Admin" asp-route-empId="@emp.EmployeeId">@nv.Subject</a></td>
+                                        }
+                                    }
+                                    <td>@nv.Issuer</td>
+                                    <td>@nv.ValidFrom.ToString("dd/MM/yyyy")</td>
+                                    <td>@nv.ValidUntil.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <a asp-action="DetailsPFXCertificate" asp-controller="Admin" asp-route-serial="@nv.Serial">Chi tiết</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-content" id="tab1-2">
+            <div class="listTable">
+                <table class="table display" id="myTable2">
+                    <thead>
+                        <tr style="color: #8B909A;">
+                            <th scope="col">SERIAL</th>
+                            <th scope="col">NƯỜI SỞ HỮU</th>
+                            <th scope="col">TỔ CHỨC CUNG CẤP</th>
+                            <th scope="col">NGÀY HIỆU LỰC</th>
+                            <th scope="col">NGÀY HẾT HẠN</th>
+                            <th scope="col">HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider align-middle">
+                        @foreach (var kh in Model.PFXCertificatesATE)
+                        {
+                            if (!kh.IsEmployee)
+                            {
+                                <tr>
+                                    <th>@kh.Serial</th>
+                                    @foreach (var cus in Model.Customers)
+                                    {
+                                        if (cus.SerialPFX == kh.Serial)
+                                        {
+                                            <td><a asp-action="DetailsCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId">@kh.Subject</a></td>
+                                        }
+                                    }
+                                    <td>@kh.Issuer</td>
+                                    <td>@kh.ValidFrom.ToString("dd/MM/yyyy")</td>
+                                    <td>@kh.ValidUntil.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="loading" id="loading">
+                                                <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+                                            </div>
+                                            <a asp-action="UpdateNotAfterPFX" asp-controller="Admin" asp-route-serial="@kh.Serial" onclick="updatePosition()">Gia hạn</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-content" id="tab1-3">
+            <div class="listTable">
+                <table class="table display" id="myTable3">
+                    <thead>
+                        <tr style="color: #8B909A;">
+                            <th scope="col">SERIAL</th>
+                            <th scope="col">NƯỜI SỞ HỮU</th>
+                            <th scope="col">TỔ CHỨC CUNG CẤP</th>
+                            <th scope="col">NGÀY HIỆU LỰC</th>
+                            <th scope="col">NGÀY HẾT HẠN</th>
+                            <th scope="col">HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider align-middle">
+                        @foreach (var kh in Model.PFXCertificatesE)
+                        {
+                            if (!kh.IsEmployee)
+                            {
+                                <tr>
+                                    <th>@kh.Serial</th>
+                                    @foreach (var cus in Model.Customers)
+                                    {
+                                        if (cus.SerialPFX == kh.Serial)
+                                        {
+                                            <td><a asp-action="DetailsCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId">@kh.Subject</a></td>
+                                        }
+                                    }
+                                    <td>@kh.Issuer</td>
+                                    <td>@kh.ValidFrom.ToString("dd/MM/yyyy")</td>
+                                    <td>@kh.ValidUntil.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="loading" id="loading">
+                                                <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+                                            </div>
+                                            <a asp-action="UpdateNotAfterPFX" asp-controller="Admin" asp-route-serial="@kh.Serial" onclick="updatePosition()">Gia hạn</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content" id="tab2">
+        <div class="tab-container">
+            <div class="tab-button" onclick="showTabChild('tab2-1')">Danh sách chứng chỉ số</div>
+            <div class="tab-button" onclick="showTabChild('tab2-2')">Danh sách chứng chỉ số sắp hết hạn</div>
+            <div class="tab-button" onclick="showTabChild('tab2-3')">Danh sách chứng chỉ số hết hạn</div>
+        </div>
+        <div class="tab-content active" id="tab2-1">
+            <div class="listTable">
+                <table class="table display" id="myTable4">
+                    <thead>
+                        <tr style="color: #8B909A;">
+                            <th scope="col">SERIAL</th>
+                            <th scope="col">NƯỜI SỞ HỮU</th>
+                            <th scope="col">TỔ CHỨC CUNG CẤP</th>
+                            <th scope="col">NGÀY HIỆU LỰC</th>
+                            <th scope="col">NGÀY HẾT HẠN</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider align-middle">
+                         
+                        @foreach (var kh in Model.PFXCertificates)
+                        {
+                            if (!kh.IsEmployee)
+                            {
+                                <tr>
+                                    <th>@kh.Serial</th>
+                                    @foreach (var cus in Model.Customers)
+                                    {
+                                        if (cus.SerialPFX == kh.Serial)
+                                        {
+                                            <td><a asp-action="DetailsCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId">@kh.Subject</a></td>
+                                        }
+                                    }
+                                    <td>@kh.Issuer</td>
+                                    <td>@kh.ValidFrom.ToString("dd/MM/yyyy")</td>
+                                    <td>@kh.ValidUntil.ToString("dd/MM/yyyy")</td>
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-content" id="tab2-2">
+            <div class="listTable">
+                <table class="table display" id="myTable5">
+                    <thead>
+                        <tr style="color: #8B909A;">
+                            <th scope="col">SERIAL</th>
+                            <th scope="col">NƯỜI SỞ HỮU</th>
+                            <th scope="col">TỔ CHỨC CUNG CẤP</th>
+                            <th scope="col">NGÀY HIỆU LỰC</th>
+                            <th scope="col">NGÀY HẾT HẠN</th>
+                            <th scope="col">HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider align-middle">
+                        @foreach (var kh in Model.PFXCertificatesATE)
+                        {
+                            if (!kh.IsEmployee)
+                            {
+                                <tr>
+                                    <th>@kh.Serial</th>
+                                    @foreach (var cus in Model.Customers)
+                                    {
+                                        if (cus.SerialPFX == kh.Serial)
+                                        {
+                                            <td><a asp-action="DetailsCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId">@kh.Subject</a></td>
+                                        }
+                                    }
+                                    <td>@kh.Issuer</td>
+                                    <td>@kh.ValidFrom.ToString("dd/MM/yyyy")</td>
+                                    <td>@kh.ValidUntil.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="loading" id="loading">
+                                                <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+                                            </div>
+                                            <a asp-action="UpdateNotAfterPFX" asp-controller="Admin" asp-route-serial="@kh.Serial" onclick="updatePosition()">Gia hạn</a>
+                                           
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-content" id="tab2-3">
+            <div class="listTable">
+                <table class="table display" id="myTable6">
+                    <thead>
+                        <tr style="color: #8B909A;">
+                            <th scope="col">SERIAL</th>
+                            <th scope="col">NƯỜI SỞ HỮU</th>
+                            <th scope="col">TỔ CHỨC CUNG CẤP</th>
+                            <th scope="col">NGÀY HIỆU LỰC</th>
+                            <th scope="col">NGÀY HẾT HẠN</th>
+                            <th scope="col">HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider align-middle">
+                        @foreach (var kh in Model.PFXCertificatesE)
+                        {
+                            if (!kh.IsEmployee)
+                            {
+                                <tr>
+                                    <th>@kh.Serial</th>
+                                    @foreach (var cus in Model.Customers)
+                                    {
+                                        if (cus.SerialPFX == kh.Serial)
+                                        {
+                                            <td><a asp-action="DetailsCus" asp-controller="BusinessStaff" asp-route-customerID="@cus.CustomerId">@kh.Subject</a></td>
+                                        }
+                                    }
+                                    <td>@kh.Issuer</td>
+                                    <td>@kh.ValidFrom.ToString("dd/MM/yyyy")</td>
+                                    <td>@kh.ValidUntil.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="loading" id="loading">
+                                                <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+                                            </div>
+                                            <a asp-action="UpdateNotAfterPFX" asp-controller="Admin" asp-route-serial="@kh.Serial" onclick="updatePosition()">Gia hạn</a>
+                                    
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // Hàm khởi tạo DataTable
+        function initializeDataTable(tableId) {
+            $('#' + tableId).DataTable({
+                "searching": false,
+                "info": false,
+                "lengthMenu": [10, 25, 50, 100],
+                "pageLength": 25,
+                "language": {
+                    "decimal": "",
+                    "paginate": {
+                        "first": "Đầu tiên",
+                        "last": "Cuối cùng",
+                        "next": "Sau",
+                        "previous": "Trước"
+                    },
+                    "lengthMenu": "Hiển thị _MENU_ dữ liệu",
+                    "emptyTable": "Không có dữ liệu"
+                }
+            });
+        }
+
+        // Khởi tạo DataTable cho các bảng cụ thể
+        initializeDataTable('myTable1');
+        initializeDataTable('myTable2');
+        initializeDataTable('myTable3');
+        initializeDataTable('myTable4');
+        initializeDataTable('myTable5');
+        initializeDataTable('myTable6');
+    });
+
+
+
+    // const iconLoading = document.getElementById("loading");
+
+    // const showLoading = () => {
+    //     iconLoading.style.display = "flex";
+    // };
+
+    // const hideLoading = () => {
+    //     iconLoading.style.display = "none";
+    // };
+
+    // const updatePosition = () => {
+    //     showLoading(); // Show loading spinner when the button is clicked
+
+    //     // You can perform additional logic here before or after the form submission
+    //     // For example, submit the form programmatically
+    //     document.querySelector('form').submit();
+
+    //     // If you want to prevent the form from submitting immediately, you can remove the form submission line
+
+    //     // Hide loading spinner after the form submission is complete
+    //     setTimeout(() => {
+    //         hideLoading(); // Hide loading icon after some time (replace this with your actual logic)
+    //     }, 1000);
+    // };
+
+    // tìm kiếm
+    document.addEventListener('DOMContentLoaded', function () {
+        // Lấy đối tượng ô tìm kiếm chung
+        var searchInput = document.getElementById('searchInput');
+
+        // Thêm sự kiện 'input' cho ô tìm kiếm chung
+        searchInput.addEventListener('input', function () {
+            filterAllTables(searchInput);
+        });
+
+        // Lấy đối tượng bảng và ô tìm kiếm cho từng tab
+        var table1 = document.getElementById('myTable1');
+        var table2 = document.getElementById('myTable2');
+        var table3 = document.getElementById('myTable3');
+        var table4 = document.getElementById('myTable4');
+        var table5 = document.getElementById('myTable5');
+        var table6 = document.getElementById('myTable6');
+
+
+    });
+
+    function filterAllTables(input) {
+        var filter = input.value.toLowerCase();
+
+        // Lấy tất cả các bảng trong tất cả các tab
+        var tables = document.getElementsByClassName('table');
+
+        for (var t = 0; t < tables.length; t++) {
+            var rows = tables[t].getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for (var i = 0; i < rows.length; i++) {
+                var rowData = rows[i].innerText.toLowerCase();
+                if (rowData.includes(filter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+
+
+    function showTab(tabId) {
+        // Ẩn tất cả các nội dung tab, trừ tab cha
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function (content) {
+            content.classList.remove('active');
+        });
+
+        // Ẩn tất cả các tab-button con
+        var tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(function (button) {
+            button.classList.remove('active');
+        });
+
+        // Hiển thị nội dung của tab được chọn và làm cho tab-button trở nên active
+        var selectedButton = document.querySelector('[onclick="showTab(\'' + tabId + '\')"]');
+        selectedButton.classList.add('active');
+        var selectedButtonChild = document.querySelector('[onclick="showTabChild(\'' + tabId + "-1" + '\')"]');
+        selectedButtonChild.classList.add('active');
+
+        var selectedTab = document.getElementById(tabId);
+        selectedTab.classList.add('active');
+        var selectedTabChild = document.getElementById(tabId + "-1");
+        selectedTabChild.classList.add('active');
+    }
+
+    function showTabChild(tabChildId) {
+        var tabId = tabChildId.slice(0, 4);
+
+        // Ẩn tất cả các nội dung tab, trừ tab cha
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function (content) {
+            content.classList.remove('active');
+        });
+
+        // Ẩn tất cả các tab-button con
+        var tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(function (button) {
+            button.classList.remove('active');
+        });
+
+        // Hiển thị nội dung của tab được chọn và làm cho tab-button trở nên active
+        var selectedTab = document.getElementById(tabId);
+        selectedTab.classList.add('active');
+        var selectedTabChild = document.getElementById(tabChildId);
+        selectedTabChild.classList.add('active');
+
+        var selectedButton = document.querySelector('[onclick="showTab(\'' + tabId + '\')"]');
+        selectedButton.classList.add('active');
+        var selectedButtonChild = document.querySelector('[onclick="showTabChild(\'' + tabChildId + '\')"]');
+        selectedButtonChild.classList.add('active');
+
+    }
+
+    // // Hàm hiển thị message
+    // function showSuccessMessage() {
+    //     $("#msg_success_filled").ej2Message.show();
+    //     // Ẩn message sau một khoảng thời gian, ví dụ sau 5 giây
+    //     setTimeout(function () {
+    //         $("#msg_success_filled").ej2Message.hide();
+    //     }, 5000);
+    // }
+
+</script>

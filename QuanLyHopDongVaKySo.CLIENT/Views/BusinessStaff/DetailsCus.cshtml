@@ -1,0 +1,407 @@
+﻿@model QuanLyHopDongVaKySo.CLIENT.ViewModels.VMDetailsCus;
+@{
+    string userRole = Context.Request.HttpContext.Session.GetString("Role");
+
+}
+<div class="container-fluid">
+
+
+    @if (userRole == "Admin")
+    {
+        Layout = "_AdminLayout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a>Quản lý tài khoản người dùng</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Danh sách khách hàng</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">CHI TIẾT KHÁCH HÀNG</h1>
+            <div class="row">
+                <a class="col-md-2 button-design" asp-action="ListCusAccount" asp-controller="Admin">
+                    <i class="ph-bold ph-arrow-left"></i>
+                    QUAY LẠI
+                </a>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        Layout = "_Layout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a>Quản lý khách hàng</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Danh sách khách hàng</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">CHI TIẾT KHÁCH HÀNG</h1>
+            <div class="row">
+                <a class="col-md-2 button-design" asp-action="ListCus" asp-controller="BusinessStaff">
+                    <i class="ph-bold ph-arrow-left"></i>
+                    QUAY LẠI
+                </a>
+            </div>
+        </div>
+    }
+    <div class="tab-container">
+        <div class="tab-button active" onclick="showTab('tab1')">Thông tin chi tiết</div>
+        <div class="tab-button" onclick="showTab('tab2')">Danh sách hợp đồng chờ ký</div>
+        <div class="tab-button" onclick="showTab('tab3')">Danh sách hợp đồng đã ký</div>
+        <a class="button-save d-flex align-items-center ms-3 @ViewBag.block" asp-action="CreateFormForCus" asp-controller="BusinessStaff" asp-route-id="@Model.Customer.CustomerId">
+            Tạo hợp đồng
+        </a>
+    </div>
+    <div class="tab-content active mt-4" id="tab1">
+        <form class="row justify-content-around" style=" margin: 0 auto;" method="post" asp-action="UpdateInfoCustomer" asp-controller="BusinessStaff">
+            <div class="col-md-5">
+                <div class="box1 row justify-content-between g-3 " style=" max-height: 800px;overflow-y: scroll;">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">ID khách hàng</label>
+                        <input class="form-control" id="inputName" asp-for="Customer.CustomerId" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Họ và tên</label>
+                        <input class="form-control" id="inputName" asp-for="Customer.FullName" readonly>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Năm sinh</label>
+                        <input class="form-control" type="date" asp-for="Customer.DateOfBirth" readonly>
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="inputName" class="form-label fw-bold">Số điện thoại</label>
+                        <input class="form-control" asp-for="Customer.PhoneNumber" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputGender" class="form-label fw-bold">Giới tính</label>
+                        @if (Model.Customer.Gender == 1)
+                        {
+                            <input class="form-control" value="Nam" readonly>
+                        }
+                        else
+                        {
+
+                            <input class="form-control" value="Nữ" readonly>
+                        }
+                        </div>
+                    <div class="col-md-6">
+                        <label for="inputCCCD" class="form-label fw-bold">Giấy ủy quyền</label>
+                        <input class="form-control" asp-for="Customer.PowerOfAttorneyNum" readonly>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputDateStart" class="form-label fw-bold">Ngày ủy quyền</label>
+                        <input type="date" class="form-control" asp-for="Customer.DatePOA" readonly>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputDateEnd" class="form-label fw-bold">Người ủy quyền</label>
+                        <input class="form-control" asp-for="Customer.WhoPOA" readonly>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputDateStart" class="form-label fw-bold">Email</label>
+                        <input class="form-control" asp-for="Customer.Email" placeholder="abc123@gmail.com" readonly>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputDateEnd" class="form-label fw-bold">FAX</label>
+                        <input class="form-control" asp-for="Customer.FAX" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputDateStart" class="form-label fw-bold">CCCD/CMND</label>
+                        <input class="form-control" asp-for="Customer.Identification" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputDateEnd" class="form-label fw-bold">Ngày cấp</label>
+                        <input type="date" class="form-control" asp-for="Customer.IssuedDate" readonly>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputDateStart" class="form-label fw-bold">Nơi cấp</label>
+                        <input class="form-control" asp-for="Customer.IssuedPlace" readonly>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputNational" class="form-label fw-bold">Quốc tịch</label>
+                        <input class="form-control" asp-for="Customer.Nationality" readonly>
+
+                    </div>
+                    <div class="col-md-12">
+                        <label for="inputEmail" class="form-label fw-bold">Địa chỉ thường trú</label>
+                        <textarea style="background-color: #F3F3F3;" class="form-control" asp-for="Customer.Address" readonly></textarea>
+
+                    </div>
+                </div>
+            </div>
+            @**@
+            <div class="col-md-5">
+                <div class="box2 row justify-content-between g-3 " style=" max-height: 800px;overflow-y: scroll;">
+                    <div class="col-md-6">
+                        <label for="inputTaxCode" class="form-label fw-bold">Số tài khoản</label>
+                        <input class="form-control" asp-for="Customer.BankAccount" readonly>
+                        
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputAddress2" class="form-label fw-bold">Ngân hàng</label>
+                        <input class="form-control" asp-for="Customer.BankName" readonly>
+                       
+                    </div>
+                    <div class="col-md-12">
+                        <label for="inputPass" class="form-label fw-bold">Mã số thuế</label>
+                        <input style="background-color: #F3F3F3;" class="form-control" asp-for="Customer.TaxIDNumber">
+                      
+                    </div>
+                    <div class="col-md-12">
+                        <label for="adReport" class="form-label fw-bold">Địa chỉ báo cước</label>
+                        <input style="background-color: #F3F3F3;" class="form-control" asp-for="Customer.ChargeNoticeAddress" readonly />
+                       
+                    </div>
+                    <div class="col-12">
+                        <label for="adInvoice" class="form-label fw-bold" style="color: #525252;
+        font-size: 18px;
+        font-family: Joxt;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+">Địa chỉ xuất hóa đơn</label>
+                        <input style="background-color: #F3F3F3;" class="form-control" asp-for="Customer.BillingAddress" readonly>
+                       
+                    </div>
+                    @if (Model.Customer.typeofCustomer == "Doanh nghiệp")
+                    { 
+                        <div class="col-12">
+                            <div>
+                                <label for="enable-input">Khách hàng doanh nghiệp</label>
+                            </div>
+                            <div class="content row" style="height: 300px;width: 95%;margin: 10px auto; ">
+                                <div class="col-md-5" style="margin:0 auto;">
+                                    <label for="inputNameBuss" class="form-label fw-bold">Tên doanh nghiệp</label>
+                                <input class="form-control" id="inputNameBuss" asp-for="Customer.BuisinessName" readonly>
+                                   
+                                </div>
+                                <div class="col-md-5" style="margin:0 auto;">
+                                    <label for="inputPosition" class="form-label fw-bold">Chức vụ</label>
+                                <input class="form-control" id="inputPosition" asp-for="Customer.Position" readonly>
+                                    
+                                </div>
+                                <div class="col-md-5" style="margin:0 auto;">
+                                    <label for="certi" class="form-label fw-bold">Số chứng nhận doanh nghiệp</label>
+                                <input class="form-control" id="certi" asp-for="Customer.BuisinessNumber" readonly>
+                                    
+                                </div>
+                                <div class="col-md-5" style="margin:0 auto;">
+                                    <label for="dateSDN" class="form-label fw-bold">Ngày cấp SDN</label>
+                                <input type="date" class="form-control" id="dateSDN" asp-for="Customer.BNDate" readonly>
+                                   
+                                </div>
+                                <div class="col-md-10" style="margin:0 auto;">
+                                    <label for="adSDN" class="form-label fw-bold">Nơi cấp SDN</label>
+                                <input class="form-control" id="adSDN" asp-for="Customer.BNPlace" readonly>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                     } 
+                    <div class="col-md-6 mt-3">
+                        <label class="mb-3 mr-1" for="Status">Trạng thái tài khoản: </label>
+                        <div>
+                            @if (!Model.Customer.IsLocked)
+                            {
+                                <input type="radio" class="btn-check " asp-for="Customer.IsLocked" id="false" value="false" autocomplete="off" readonly checked>
+                                <label class="btn btn-sm btn-outline-success text-light" id="false-label" for="false">Hoạt động</label>
+                            }
+                            else
+                            {
+                                <input type="radio" class="btn-check " asp-for="Customer.IsLocked" id="true" value="true" autocomplete="off" readonly checked>
+                                <label class="btn btn-sm btn-outline-danger text-light" id="true-label" for="true">Khoá</label>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="note" class="form-label fw-bold">Ghi chú</label>
+                        <textarea style="background-color: #F3F3F3;" class="form-control" asp-for="Customer.Note" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div> 
+    <div class="tab-content " id="tab2">
+        <div class="row mx-auto bg-white rounded mt-1">
+            <div class="listTable">
+                <table class="table display" id="myTable">
+                    <thead>
+                        <tr style="color: #8B909A;">
+                            <th scope="col">ID</th>
+                            <th scope="col">EMAIL</th>
+                            <th scope="col">NGÀY ĐĂNG KÝ DỊCH VỤ</th>
+                            <th scope="col">HỌ VÀ TÊN</th>
+                            <th scope="col">LOẠI HỢP ĐỒNG ĐĂNG KÝ</th>
+                            <th scope="col">TRẠNG THÁI</th>
+                            <th scope="col">HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider align-middle">
+                        @foreach (var item in Model.PendingContracts)
+                        {
+                            <tr>
+                                <th scope="row">@item.PContractID</th>
+                                <td>@item.CustomerEmail</td>
+                                <td>@item.DateCreated</td>
+                                <td>@item.CustomerName</td>
+                                <td>@item.TOS_ID</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 5px; height: 5px; background-color: #FFC600; border-radius: 50%; margin-right: 10px;"></div>
+                                        <span>Chờ ký</span>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    <button class="button-design" onclick="downloadPDF('@item.Base64File','@item.PContractName')"><i class="ph-bold ph-download-simple"></i></button>
+                                </td>
+                                <td>
+                                    <a asp-action="Details_Contract_PendingApproved" asp-controller="BusinessStaff" asp-route-id="@item.PContractID" asp-route-tille="Yêu cầu lắp đặt">Chi tiết</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content " id="tab3">
+        <div class="row mx-auto bg-white rounded mt-1">
+            <div class="listTable">
+                <table class="table display" id="myTable1">
+                    <thead>
+                        <tr style="color: #8B909A;">
+                            <th scope="col">ID</th>
+                            <th scope="col">NGÀY HOÀN THÀNH</th>
+                            <th scope="col">TÊN HỢP ĐỒNG</th>
+                            <th scope="col">HỌ VÀ TÊN</th>
+                            <th scope="col">ĐỊA CHỈ LẮP ĐẶT</th>
+                            <th scope="col">TRẠNG THÁI</th>
+                            <th scope="col">HÀNH ĐỘNG</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider align-middle">
+                        @foreach (var item in Model.DoneContracts)
+                        {
+                            <tr>
+                                <th scope="row">@item.Id</th>
+                                <td>@item.DateDone</td>
+                                <td>@item.CustomerName</td>
+                                <td>@item.CustomerName</td>
+                                <td>@item.TypeOfService</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 5px; height: 5px; background-color: #00C9A7; border-radius: 50%; margin-right: 10px;"></div>
+                                        <span>Đã ký</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="button-design" onclick="downloadPDF('@item.Base64File','Hợp đồng @item.TypeOfService')"><i class="ph-bold ph-download-simple"></i></button>
+                                </td>
+                                <td>
+                                    <a asp-controller="Director" asp-action="Details_Contract_Active" asp-route-id="@item.Id">Chi tiết</a>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // Khởi tạo DataTable
+        $('#myTable').DataTable({
+            "info": false,
+            "lengthMenu": [10, 25, 50, 100],
+            "pageLength": 25,
+            "language": {
+                "decimal": "",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Sau",
+                    "previous": "Trước"
+                },
+                "lengthMenu": "Hiển thị _MENU_ dữ liệu",
+                "emptyTable": "Không có dữ liệu"
+            }
+        });
+
+
+        $('#myTable1').DataTable({
+            "info": false,
+            "lengthMenu": [10, 25, 50, 100],
+            "pageLength": 25,
+            "language": {
+                "decimal": "",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Sau",
+                    "previous": "Trước"
+                },
+                "lengthMenu": "Hiển thị _MENU_ dữ liệu",
+                "emptyTable": "Không có dữ liệu"
+            }
+        });
+    });
+
+    function showTab(tabId) {
+        // Ẩn tất cả các nội dung tab
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function (content) {
+            content.classList.remove('active');
+        });
+
+        // Ẩn tất cả các tab-button
+        var tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(function (button) {
+            button.classList.remove('active');
+        });
+
+        // Hiển thị nội dung của tab được chọn và làm cho tab-button trở nên active
+        var selectedTab = document.getElementById(tabId);
+        selectedTab.classList.add('active');
+
+        var selectedButton = document.querySelector('[onclick="showTab(\'' + tabId + '\')"]');
+        selectedButton.classList.add('active');
+    }
+    function downloadPDF(base64String, fileName) {
+        var byteCharacters = atob(base64String);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], { type: 'application/pdf' });
+
+        var blobUrl = URL.createObjectURL(blob);
+
+        var a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+   
+</script>

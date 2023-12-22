@@ -1,0 +1,221 @@
+﻿@model QuanLyHopDongVaKySo.CLIENT.ViewModels.VMListTOS
+@{
+    Layout = "_AdminLayout";
+}
+<style>
+    .loading {
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.479);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .loading img {
+        width: 7rem;
+    }
+</style>
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                <li class="breadcrumb-item"> <a>Quản lý dịch vụ và kĩ thuật</a></li>
+                <li class="breadcrumb-item active" aria-current="page"> Danh sách dịch vụ</li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">TẤT CẢ DANH SÁCH</h1>
+        <div class="row justify-content-around">
+            <input type="search" id="searchInput" class="src" placeholder="Tìm kiếm trong danh sách" />
+            <button class="button-save col-md-2 offset-md-7" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                THÊM DỊCH VỤ
+                <i class="ph-bold ph-plus"></i>
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Thêm dịch vụ mới</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="row g-3" asp-action="AddTOSAction" asp-controller="Admin">
+                                <div class="col-12">
+                                    <label for="inputName" class="form-label">Tên dịch vụ</label>
+                                    <input class="form-control" required asp-for="PostTOS.ServiceName">
+                                    <span class="text-danger" asp-validation-for="PostTOS.ServiceName"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputName" class="form-label">Giá dịch vụ</label>
+                                    <input class="form-control" type="number" step="0.5" required asp-for="PostTOS.Price">
+                                    <span class="text-danger" asp-validation-for="PostTOS.Price"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputName" class="form-label">Đơn vị thời gian</label>
+                                    <input class="form-control" required asp-for="PostTOS.PerTime">
+                                    <span class="text-danger" asp-validation-for="PostTOS.PerTime"></span>
+                                </div>
+                              
+                                <div class="col-12">
+                                    <label for="inputRole" class="form-label">Mẫu hợp đồng</label>
+                                    <select required class="form-select" asp-for="PostTOS.TContractID">
+                                        <option value="" disabled selected>...Chọn mẫu hợp đồng</option>
+                                        @foreach (var c in Model.TemplateContracts)
+                                        {
+                                            <option value="@c.TContactID">@c.TContractName</option>
+                                        }
+                                    </select>
+                                    <span class="text-danger" asp-validation-for="PostTOS.TContractID"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputRole" class="form-label">Mẫu biên bản lắp đặt</label>
+                                    <select required class="form-select" asp-for="PostTOS.TMinuteID">
+                                        <option value="" disabled selected>...Chọn mẫu biên bản lắp đặt</option>
+                                        @foreach (var m in Model.TemplateMinutes)
+                                        {
+                                            <option value="@m.TMinuteID">@m.TMinuteName</option>
+                                        }
+                                    </select>
+                                        <span class="text-danger" asp-validation-for="PostTOS.TMinuteID"></span>
+                                </div>
+                                <div class="col-md-5" style="margin:auto;">
+                                    <div class="loading" id="loading">
+                                        <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+                                    </div>
+                                    <button class="btn-addRole mx-auto my-auto mt-3" type="submit" style="width: 100%;" onclick="updatePosition()">
+                                        THÊM
+                                       
+
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row bg-white mx-auto my-auto mt-4 rounded">
+        <div class="listTable">
+            <table class="table display" id="myTable">
+                <thead>
+                    <tr style="color: #8B909A;">
+                        <th scope="col">HÀNH ĐỘNG</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">NGÀY TẠO</th>
+                        <th scope="col">NGÀY CẬP NHẬT</th>
+                        <th scope="col">TÊN DỊCH VỤ</th>
+                        <th scope="col">GIÁ</th>
+                        <th scope="col">ĐƠN VỊ THỜI GIAN</th>
+                        <th scope="col">TRẠNG THÁI</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider align-middle">
+                    @foreach (var item in Model.TypeOfServices)
+                    {
+                        <tr>
+                            <td>
+                                <div class="row action">
+                                    <a asp-route-tosID="@item.TOS_ID" asp-action="EditTypeOfService" asp-controller="Admin"><i class="ph-bold ph-note-pencil"></i></a>
+                                </div>
+                            </td>
+                            <td scope="row">@item.TOS_ID</td>
+                            <td>
+                                @item.DateAdded?.ToString("HH:mm:ss dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @item.DateUpdated?.ToString("HH:mm:ss dd/MM/yyyy")
+                            </td>
+                            <td>@item.ServiceName</td>
+                            <td>@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c}", item.Price)</td>
+                            <td>@item.PerTime</td>
+                            <td>
+                                @if (item.isHidden)
+                                {
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 5px; height: 5px; background-color: red; border-radius: 50%; margin-right: 10px;"></div>
+                                        <span>Đã khoá</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 5px; height: 5px; background-color: #00C9A7; border-radius: 50%; margin-right: 10px;"></div>
+                                        <span>Có thể sử dụng</span>
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                <a asp-route-tosID="@item.TOS_ID" asp-action="DetailsTypeOfService" asp-controller="Admin">Chi tiết</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // Khởi tạo DataTable
+        $('#myTable').DataTable({
+            "searching": false,
+            "info": false,
+            "lengthMenu": [10, 25, 50, 100],
+            "pageLength": 25,
+            "language": {
+                "decimal": "",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Sau",
+                    "previous": "Trước"
+                }, 
+                "lengthMenu": "Hiển thị _MENU_ dữ liệu", 
+                "emptyTable": "Không có dữ liệu"
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        // Lấy đối tượng ô tìm kiếm và bảng
+        var input = document.getElementById('searchInput');
+        var table = document.getElementById('myTable');
+
+        // Thêm sự kiện 'input' cho ô tìm kiếm
+        input.addEventListener('input', function () {
+            // Gọi hàm filterTable khi người dùng nhập liệu
+            filterTable();
+        });
+
+        function filterTable() {
+            // Lấy giá trị từ ô tìm kiếm và chuyển đổi thành chữ thường
+            var filter = input.value.toLowerCase();
+
+            // Lấy tất cả các dòng trong tbody của bảng
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            // Lặp qua từng dòng và ẩn hoặc hiển thị dựa trên từ khóa tìm kiếm
+            for (var i = 0; i < rows.length; i++) {
+                var rowData = rows[i].innerText.toLowerCase();
+                if (rowData.includes(filter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    });
+</script>

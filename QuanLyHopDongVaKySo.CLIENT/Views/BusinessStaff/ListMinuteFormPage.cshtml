@@ -1,0 +1,201 @@
+﻿@model IEnumerable<QuanLyHopDongVaKySo_API.Models.TemplateMinute>
+
+@* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@{
+    string userRole = Context.Request.HttpContext.Session.GetString("Role");
+
+}
+<div class="container-fluid">
+
+
+    @if (userRole == "Admin")
+    {
+        Layout = "_AdminLayout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"> <a>Nhân viên kinh doanh</a></li>
+                    <li class="breadcrumb-item"> <a>Hợp đồng - Biên bản mẫu</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Danh sách biên bản mẫu</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">TẤT CẢ DANH SÁCH</h1>
+            <div class="row">
+                <input type="search" class="src" id="searchInput" placeholder="Tìm kiếm khách hàng" />
+                <button class="add_Cus col-md-2 offset-md-7">
+                    <a asp-controller="BusinessStaff" asp-action="MinuteFormPage">
+                        THÊM MẪU
+                        <i class="ph-bold ph-plus"></i>
+                    </a>
+                </button>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        Layout = "_Layout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"> <a>Hợp đồng - Biên bản mẫu</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Danh sách biên bản mẫu</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">TẤT CẢ DANH SÁCH</h1>
+            <div class="row">
+                <input type="search" class="src" id="searchInput" placeholder="Tìm kiếm khách hàng" />
+                <button class="add_Cus col-md-2 offset-md-7">
+                    <a asp-controller="BusinessStaff" asp-action="MinuteFormPage">
+                        THÊM MẪU
+                        <i class="ph-bold ph-plus"></i>
+                    </a>
+                </button>
+            </div>
+        </div>
+
+    }
+ 
+
+    <div class="row bg-white mx-auto my-auto mt-4 rounded">
+        <div class="listTable">
+            <table class="table display" id="myTable">
+                <thead>
+                    <tr style="color: #8B909A;">
+
+                        <th scope="col">ID</th>
+                        <th scope="col">Ngày cập nhật</th>
+                        <th scope="col">Tên biên bản</th>
+                        <th scope="col" style="text-align:center;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th scope="row">@item.TMinuteID </th>
+                            <td>@item.DateAdded</td>
+                            <td>@item.TMinuteName</td>
+                            <td class="action text-center" >
+                                <a class="button-design" asp-controller="BusinessStaff" asp-action="EditMinuteFormPage" asp-route-tMinuteId="@item.TMinuteID"><i class="ph-bold ph-pencil-simple-line"></i></a>
+                                <a class="button-save" onclick="confirmDownload('@item.Base64File','@item.TMinuteName')"><i class="ph-bold ph-download-simple"></i></a>
+                                <a class="button-delete" asp-controller="BusinessStaff" asp-action="DeleteTMinute" asp-route-tMinuteId="@item.TMinuteID">
+                                    <i class="ph-bold ph-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Khởi tạo DataTable
+        $('#myTable').DataTable({
+            "searching": false,
+            "info": false,
+            "lengthMenu": [10, 25, 50, 100],
+            "pageLength": 25,
+            "language": {
+                "decimal": "",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Sau",
+                    "previous": "Trước"
+                },
+                "lengthMenu": "Hiển thị _MENU_ dữ liệu",
+                "emptyTable": "Không có dữ liệu"
+            }
+        });
+    });
+
+    function downloadPDF(base64String, fileName) {
+        var byteCharacters = atob(base64String);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], { type: 'application/pdf' });
+
+        var blobUrl = URL.createObjectURL(blob);
+
+        var a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+     function confirmDownload(base64File, tMinuteName) {
+        // Sử dụng SweetAlert để xác nhận tải xuống
+        Swal.fire({
+            title: 'Bạn có muốn tải xuống?',
+            text: 'Hành động này sẽ tải xuống tệp PDF.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Tải xuống',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng xác nhận tải xuống, thực hiện hàm tải xuống
+                downloadPDF(base64File, tMinuteName);
+            }
+        });
+    }
+
+    // tìm kiếm
+    document.addEventListener('DOMContentLoaded', function () {
+        // Lấy đối tượng ô tìm kiếm và bảng
+        var input = document.getElementById('searchInput');
+        var table = document.getElementById('myTable');
+
+        // Thêm sự kiện 'input' cho ô tìm kiếm
+        input.addEventListener('input', function () {
+            // Gọi hàm filterTable khi người dùng nhập liệu
+            filterTable();
+        });
+
+        function filterTable() {
+            // Lấy giá trị từ ô tìm kiếm và chuyển đổi thành chữ thường
+            var filter = input.value.toLowerCase();
+
+            // Lấy tất cả các dòng trong tbody của bảng
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            // Lặp qua từng dòng và ẩn hoặc hiển thị dựa trên từ khóa tìm kiếm
+            for (var i = 0; i < rows.length; i++) {
+                var rowData = rows[i].innerText.toLowerCase();
+                if (rowData.includes(filter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    });
+   
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+

@@ -1,0 +1,146 @@
+﻿@model QuanLyHopDongVaKySo_API.Models.PostTMinute
+@{
+    string userRole = Context.Request.HttpContext.Session.GetString("Role");
+
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+    #loading-spinner {
+        display: none;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        position: fixed;
+        top: 100%;
+        left: 100%;
+        transform: translate(-50%, -50%);
+    }
+
+        #loading-spinner > img {
+            width: 10rem;
+        }
+</style>
+<div class="container-fluid" style="height: 20vh;">
+
+    @if (userRole == "Admin")
+    {
+        Layout = "_AdminLayout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"> <a>Nhân viên kinh doanh</a></li>
+                    <li class="breadcrumb-item"> <a>Hợp đồng - Biên bản mẫu</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Thêm mẫu biên bản</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">TẢI BIÊN BẲN LẮP ĐẶT MẪU</h1>
+        </div>
+    }
+    else
+    {
+        Layout = "_Layout";
+        <link href="~/php/style.css" rel="stylesheet" />
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a>Hợp đồng - Biên bản mẫu</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Thêm mẫu biên bản</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">TẢI BIÊN BẲN LẮP ĐẶT MẪU</h1>
+        </div>
+    }
+   
+</div>
+<div class="row mt-2 mx-auto">
+    <form class="form" method="post" enctype="multipart/form-data" id="FormPostTContract" asp-action="AddTMinute" asp-controller="BusinessStaff">
+        <input asp-for="File" type="file" accept=".pdf" id="pdfInput" style="display:none;" required>
+        <img width="64" height="64" style="margin-bottom:15px" src="~/Images/pdf_icon.png" alt="external-pdf-file-types-others-iconmarket" />
+        <button type="button" class="button-22" id="uploadIcon" >TẢI PDF</button>
+        <br />
+        <section>
+            <div style="display: flex; justify-content: space-evenly;">
+                <button type="submit" class="button-22" id="saveButton" style="display:none;" onclick="saveData()">
+                    Lưu  
+                </button>
+            </div>
+        </section>
+    </form>
+    <div id="loading-spinner">
+        <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+    </div>
+</div>
+
+
+<script type="text/javascript"> 
+    document.getElementById('uploadIcon').addEventListener('click', function () {
+        document.getElementById('pdfInput').click();
+    });
+
+    function saveData(){
+        event.preventDefault();
+        document.getElementById('loading-spinner').style.display = 'block';
+        document.getElementById("FormPostTContract").submit();
+    }
+
+    document.getElementById('pdfInput').addEventListener('change', function () {
+        var fileInput = document.getElementById('pdfInput');
+        var saveButton = document.getElementById('saveButton');
+
+        if (fileInput.files.length > 0) {
+            var uploadedFileName = fileInput.files[0].name;
+
+            // Show loading before processing
+            showLoading();
+
+            setTimeout(function () {
+                showSuccessAlert(uploadedFileName);
+                saveButton.style.display = 'block';
+                // Hide loading after successful processing
+                hideLoading();
+            }, 2000);
+        } else {
+            setTimeout(function () {
+                showErrorAlert(uploadedFileName);
+                saveButton.style.display = 'none';
+                // Hide loading after processing (whether successful or not)
+                hideLoading();
+            }, 2000);
+        }
+    });
+
+    function showSuccessAlert(uploadedFileName) {
+        // Hiển thị SweetAlert với thông báo thành công và tên tệp
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: 'Tệp ' + uploadedFileName + ' đã được chọn thành công.',
+            confirmButtonText: 'OK'
+        });
+    }
+
+
+    function showErrorAlert(uploadedFileName) {
+        // Hiển thị SweetAlert với thông báo không thành công
+        Swal.fire({
+            icon: 'error',
+            title: 'Không thành công!',
+            text: 'Lưu tệp ' + uploadedFileName + 'không thành công',
+            confirmButtonText: 'OK'
+        });
+    }
+   
+
+</script>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>

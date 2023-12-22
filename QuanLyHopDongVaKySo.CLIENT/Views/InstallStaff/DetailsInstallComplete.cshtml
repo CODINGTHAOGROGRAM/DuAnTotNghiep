@@ -1,0 +1,235 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IWebHostEnvironment _hostingEnvironment
+@model QuanLyHopDongVaKySo.CLIENT.ViewModels.VMDeitalsMinute;
+@{
+    List<string> imageFilesMinute = new List<string>();
+    string fileDMinuteNull = "Resource/Image/empty.png";
+    string folderPath = System.IO.Path.Combine(_hostingEnvironment.WebRootPath, "MinuteImage"); // + thêm ID của contract
+
+    string? folderItemMinute = System.IO.Path.Combine(folderPath, Model.DoneMinute.DoneMinuteID.ToString());
+
+    if (folderItemMinute != null)
+    {
+        imageFilesMinute = Directory.GetFiles(folderItemMinute).ToList();
+    }
+    string userRole = Context.Request.HttpContext.Session.GetString("Role");
+}
+<div class="container-fluid">
+    @if (userRole == "Admin")
+    {
+        Layout = "_AdminLayout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a>Nhân viên lắp đặt</a></li>
+                    <li class="breadcrumb-item"><a>Quản lý yêu cầu lắp</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Biên bản đã nhận lắp</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">CHI TIẾT BIÊN BẢN ĐÃ LẮP</h1>
+            <div class="row">
+                <a class="col-md-2 button-design" asp-action="Record_Install_Complete" asp-controller="InstallStaff">
+                    <i class="ph-bold ph-arrow-left"></i>
+                    QUAY LẠI
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        Layout = "_Layout";
+        <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                    <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a>Quản lý yêu cầu lắp</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"> Biên bản đã nhận lắp</li>
+                </ol>
+            </nav>
+            <h1 class="typeHead">CHI TIẾT BIÊN BẢN LẮP</h1>
+            <div class="row">
+                <a class="col-md-2 button-design" asp-action="Record_Install_Complete" asp-controller="InstallStaff">
+                    <i class="ph-bold ph-arrow-left"></i>
+                    QUAY LẠI
+                </a>
+            </div>
+        </div>
+    }
+    <div class="row bg-white rounded mt-4 mx-auto my-auto">
+        <div class="col-6" style="margin: 20px;">
+            <div class="showFile">
+                <div class="row justify-content-between" style="margin:auto;">
+                    <h4 class="col-5 typeHead">Biên bản lắp đặt</h4>
+                    <button class="custom-file-upload col-1" data-bs-toggle="modal" data-bs-target="#ShowMinute" style="width:30px; height:30px;">
+                        <i class="ph-bold ph-frame-corners" style="font-size:30px; margin: auto;"></i>
+                    </button>
+                </div>
+                <div id="myCarousel1" class="carousel slide" style=" width:100%;height: 750px;">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active ">
+                            <img src="~/Resource/Image/LOGO/1.png" alt="Hình ảnh" width="100%" />
+                        </div>
+                         @if (folderItemMinute != null)
+                        {
+                            @foreach (var imgPath in imageFilesMinute)
+                            {
+                                <div class="carousel-item" style="max-height: 800px;overflow-y: scroll;">
+                                    <img src="@Url.Content("~/MinuteImage/"+Model.DoneMinute.DoneMinuteID+"/" + System.IO.Path.GetFileName(imgPath))" alt="Hình ảnh" style="width:100%;" />
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="carousel-item" style="max-height: 800px;overflow-y: scroll;">
+                                <img src="~/@fileDMinuteNull" alt="Hình ảnh" width="100%" />
+                            </div>
+                        } 
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel1" data-bs-slide="prev" style="margin: auto;background-color: black;font-size: 100px;width: 50px;height: 100px;">
+                        <span class="carousel-control-prev-icon" aria-hidden="true" style="width:20px; height:20px;"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button style="margin: auto;background-color: black;font-size: 100px; width: 50px;height: 100px;" class="carousel-control-next" type="button" data-bs-target="#myCarousel1" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true" style="width:20px; height:20px;"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+                <!--Show hợp đồng to-->
+                <!-- Modal -->
+                <div class="modal fade" id="ShowMinute" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="myCarouselModal1" class="carousel slide">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active ">
+                                            <img src="~/Resource/Image/LOGO/1.png" alt="Hình ảnh" width="100%" />
+                                        </div>
+                                        @if (folderItemMinute != null)
+                                        {
+                                            @foreach (var imgPath in imageFilesMinute)
+                                            {
+                                                <div class="carousel-item" style="max-height: 800px;overflow-y: scroll;">
+                                                    <img src="@Url.Content("~/MinuteImage/"+Model.DoneMinute.DoneMinuteID+"/" + System.IO.Path.GetFileName(imgPath))" alt="Hình ảnh" style="width:100%;" />
+                                                </div>
+                                            }
+                                        }
+                                       
+                                        else
+                                        {
+                                            <div class="carousel-item" style="max-height: 800px;overflow-y: scroll;">
+                                                <img src="~/@fileDMinuteNull" alt="Hình ảnh" width="100%" />
+                                            </div>
+                                        } 
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#myCarouselModal1" data-bs-slide="prev" style="margin: auto;background-color: black;font-size: 100px;width: 50px;height: 100px;">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true" style="width:20px; height:20px;"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button style="margin: auto;background-color: black;font-size: 100px; width: 50px;height: 100px;" class="carousel-control-next" type="button" data-bs-target="#myCarouselModal1" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true" style="width:20px; height:20px;"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="inforCus col-5 mt-4" style="max-height:800px; overflow-y: scroll; ">
+            <h4 class="typeHead">
+                Thông tin khách hàng
+            </h4>
+             <form class="row g-3" style="max-width:950px;">
+                <div class="col-md-6">
+                    <label for="inputName" class="form-label fw-bold">Họ và tên</label>
+                    <input type="text" class="form-input" id="inputName" asp-for="@Model.Employee.FullName" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputState" class="form-label fw-bold">Giới tính</label>
+                    @if (Model.Employee.Gender == 1)
+                    {
+                        <input type="text" class="form-input" id="inputName" readonly value="Nam">
+                    }
+                    else
+                    {
+                        <input type="text" class="form-input" id="inputName" readonly value="Nữ">
+                    }
+                </div>
+                <div class="col-md-6">
+                    <label for="inputCCCD" class="form-label fw-bold">CCCD/CMND</label>
+                    <input type="text" class="form-input" id="inputCCCD" asp-for="@Model.Employee.Identification" readonly>
+                </div>
+                <div class="col-md-5">
+                    <label for="inputPhone" class="form-label fw-bold">Số điện thoại</label>
+                    <input type="text" class="form-input" id="inputPhone" asp-for="@Model.Employee.PhoneNumber" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputEmail4" class="form-label fw-bold">Địa chỉ Email</label>
+                    <input type="email" class="form-input" id="inputEmail4" asp-for="@Model.Employee.Email" readonly>
+                </div>
+                <div class="col-md-5">
+                    <label for="inputAddress" class="form-label fw-bold">Nơi ở</label>
+                    <input type="text" class="form-input" id="inputAddress" asp-for="@Model.Employee.Address" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputEmail4" class="form-label fw-bold">Mã hợp đồng</label>
+                    <input type="email" class="form-input" id="inputEmail4"  readonly>
+                </div>
+                <div class="col-md-5">
+                    <label for="inputAddress" class="form-label fw-bold">Loại dịch vụ đã đăng ký</label>
+                    <input type="text" class="form-input" id="inputAddress"   readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputEmail4" class="form-label fw-bold">Ngày hiệu lực</label>
+                    <input type="email" class="form-input" id="inputEmail4"  readonly >
+                </div>
+                <div class="col-md-5">
+                    <label for="inputAddress" class="form-label fw-bold">Mã Biên bản lắp </label>
+                    <input type="text" class="form-input" id="inputAddress" readonly>
+                </div>
+                <h4 class="typeHead mt-3">
+                    Thông tin nhân viên lắp đặt
+                </h4>
+                <div class="col-md-6">
+                    <label for="inputEmail4" class="form-label fw-bold">Mã nhân viên</label>
+                    <input type="email" class="form-input" id="inputEmail4"  asp-for="@Model.Employee.EmployeeId" readonly>
+                </div>
+                <div class="col-md-5">
+                    <label for="inputAddress" class="form-label fw-bold">Họ và tên</label>
+                    <input type="text" class="form-input" id="inputAddress"  asp-for="@Model.Employee.FullName" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputEmail4" class="form-label fw-bold">Email</label>
+                    <input type="email" class="form-input" id="inputEmail4" asp-for="@Model.Employee.Email" readonly> 
+                </div>
+                <div class="col-md-5">
+                    <label for="inputAddress" class="form-label fw-bold">Số điện thoại</label>
+                    <input type="text" class="form-input" id="inputAddress"  asp-for="@Model.Employee.PhoneNumber" readonly>
+                </div>
+            </form> 
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#myCarousel1').carousel({
+            interval: false
+        });
+    });
+    $(document).ready(function () {
+        $('#myCarouselModal1').carousel({
+            interval: false
+        });
+    });
+</script>

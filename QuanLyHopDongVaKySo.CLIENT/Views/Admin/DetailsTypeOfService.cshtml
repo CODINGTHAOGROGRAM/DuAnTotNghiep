@@ -1,0 +1,154 @@
+﻿@model QuanLyHopDongVaKySo.CLIENT.ViewModels.VMDetailsTypeOfService
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_AdminLayout";
+    string tosID = HttpContextAccessor.HttpContext.Session.GetString("tosID");
+}
+@section Scripts {
+    <script>
+    
+        // jQuery is assumed to be available
+
+        // Hàm để thực hiện Ajax và cập nhật dữ liệu
+        function saveDevice(deviceId) {
+            var device = {
+                Device_ID: deviceId,
+                DeviceName: $('#deviceName_' + deviceId).val(),
+                DeviceStatus: $('#deviceStatus_' + deviceId).val(),
+                DeviceQuantity: $('#deviceQuantity_' + deviceId).val(),
+                TOS_ID: $('#tosId_' + deviceId).val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("EditDeviceAction")',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(device),
+                success: function (result) {
+                    if (!result.success) {
+                        // Chuyển hướng tới trang mong muốn
+                        var redirectToUrl = '@Url.Action("DetailsTypeOfService", "Admin")?tosID=' + device.TOS_ID;
+                        window.location.href = redirectToUrl;
+                       
+                    }
+                },
+                error: function () {
+                    console.error('Lỗi khi gửi yêu cầu.');
+                }
+            });
+        }
+    </script>
+}
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                <li class="breadcrumb-item"> <a>Quản lý loại dịch vụ và kĩ thuật</a></li>
+                <li class="breadcrumb-item active" aria-current="page"> Danh sách dịch vụ</li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">CHI TIẾT DỊCH VỤ</h1>
+        <div class="row justify-content-between">
+            <a class="button-design col-md-2" asp-action="ListTypeOfService" asp-controller="Admin">
+                <i class="ph-bold ph-arrow-left"></i>
+                 QUAY LẠI
+            </a>
+            <button class="button-save col-md-2 offset-md-7" type="button" data-bs-toggle="modal" data-bs-target="#addEquid">
+               THÊM THIẾT BỊ
+                <i class="ph-bold ph-plus"></i>
+            </button>
+            <!--modal-->
+            <div class="modal fade" id="addEquid" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Thêm mới thiết bị lắp</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="row justify-content-around mx-auto my-auto" method="post" asp-action="AddDeviceAction" asp-controller="Admin">
+                                <table class="table">
+                                    <thead>
+                                        <tr style="color: #8B909A;">
+                                            <th>TÊN THIẾT BỊ</th>
+                                            <th>TRẠNG THÁI</th>
+                                            <th>SỐ LƯỢNG</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-group-divider">
+                                        @{
+                                            try
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <input class="form-control" required asp-for="@Model.InstallationDevice.DeviceName">
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" required asp-for="@Model.InstallationDevice.DeviceStatus">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="0" step="1" class="form-control" required asp-for="@Model.InstallationDevice.DeviceQuantity">
+                                                    </td>
+                                                    <td class="d-none">
+                                                        <input type="text" class="form-control" required readonly asp-for="@Model.InstallationDevice.TOS_ID" value="@tosID" />
+                                                    </td>
+                                                </tr>
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Console.Write("");
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <button class="add_cus" type="submit" >
+                                    Thêm
+                                   
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table" style="margin-top:30px;">
+        <thead>
+            <tr style="color: #8B909A;">
+                <th>ID</th>
+                <th>TÊN THIẾT BỊ</th>
+                <th>TRẠNG THÁI</th>
+                <th>SỐ LƯỢNG</th>
+                <th colspan="2">HÀNH ĐỘNG</th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (var item in Model.InstallationDevices)
+                {
+                <tr>
+                    <td><input class="form-control" asp-for="@item.Device_ID" readonly></td>
+                    <td><input class="form-control" required asp-for="@item.DeviceName" id="deviceName_@item.Device_ID"></td>
+                    <td><input class="form-control" required asp-for="@item.DeviceStatus" id="deviceStatus_@item.Device_ID"></td>
+                    <td>
+                        <input type="number" min="0" step="1" required class="form-control" asp-for="@item.DeviceQuantity" id="deviceQuantity_@item.Device_ID">
+                    </td>
+                    <td class="d-none">
+                        <input class="form-control" required asp-for="@item.TOS_ID" id="tosId_@item.Device_ID">
+                    </td>
+                    <td>
+                        <button class="button-save" type="button" onclick="saveDevice('@item.Device_ID')">Lưu  
+                           </button>
+                        <a class="button-delete" asp-action="DelDeviceAction" asp-controller="Admin" asp-route-deviceID="@item.Device_ID">Xoá</a>
+                    </td>
+                </tr>
+                }
+        </tbody>
+    </table>
+    
+</div>
+
+

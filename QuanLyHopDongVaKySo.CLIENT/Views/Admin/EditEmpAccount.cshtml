@@ -1,0 +1,199 @@
+﻿@model QuanLyHopDongVaKySo.CLIENT.ViewModels.VMEditEmployee
+@{
+    Layout = "_AdminLayout";
+}
+<style>
+    .loading {
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        background: rgba(0, 0, 0, 0.479);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+        .loading img {
+            width: 7rem;
+        }
+</style>
+<div class="container-fluid">
+    <div class=" block justify-between items-center p-4  mt-4 mb-6 bg-white rounded-2xl shadow-xl shadow-gray-200 lg:p-5 sm:flex">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <i class="ph-bold ph-house" style="font-size: 20px; margin: auto 5px;"></i>
+                <li class="breadcrumb-item"> <a>Trang chủ</a></li>
+                <li class="breadcrumb-item"> <a>Quản lý tài khoản người dùng</a></li>
+                <li class="breadcrumb-item active" aria-current="page"> Danh sách nhân viên</li>
+            </ol>
+        </nav>
+        <h1 class="typeHead">CHỈNH SỬA NHÂN VIÊN</h1>
+    </div>
+    <form class="row justify-content-around rounded mx-auto my-auto mt-5" asp-action="EditEmpAction" asp-controller="Admin" method="post" enctype="multipart/form-data">
+        <div class="col-md-5">
+            <div class="box1 row justify-content-between g-3 " style=" max-height: 800px;overflow-y: scroll;">
+                <div class="col-md-6">
+                    <div class="avt">
+                        @if (Model.Employee.Image == null)
+                        {
+                            if (Model.Employee.Gender == 1)
+                            {
+                                <img src="~/Avatars/blank_avatar_man.png" alt="Avatar" style="width:100%; height:100%;" />
+                            }
+                            else
+                            {
+
+                                <img src="~/Avatars/blank_avatar_woman.png" alt="Avatar" style="width:100%; height:100%;" />
+                            }
+                        }
+                        else
+                        {
+                            <img src="~/@Model.Employee.Image" alt="Avatar" style="width:100%; height:100%;" />
+                        }
+                        <div class="overlay">
+                            <label for="file-upload" class="custom-file-upload col-7" role="button">
+                                <i class="ph-bold ph-cloud-arrow-up"></i>
+                                UPLOAD
+                            </label>
+                            <input id="file-upload" type="file" accept="image/*" asp-for="Employee.ImageFile" />
+                            <span class="text-danger" asp-validation-for="Employee.ImageFile"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+
+                    <label for="inputDateEnd" class="form-label fw-bold">ID</label>
+                    <input class="form-control" readonly asp-for="Employee.EmployeeId">
+                    <span class="text-danger" asp-validation-for="Employee.EmployeeId"></span>
+                    <input class="form-input d-none" asp-for="Employee.IsFirstLogin" readonly>
+
+                    <label class="form-label fw-bold" style="padding-top:60px;">Họ và tên</label>
+                    <input class="form-control" id="inputName" placeholder="Họ và tên" asp-for="Employee.FullName" required>
+                    <span class="text-danger" asp-validation-for="Employee.FullName"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputEmail" class="form-label fw-bold">Email</label>
+                    <input class="form-control" type="email" asp-for="Employee.Email" placeholder="abc123@gmail.com" required>
+                    <span class="text-danger" asp-validation-for="Employee.Email"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputDateOfBirth" class="form-label fw-bold">Năm sinh</label>
+                    <input type="date" class="form-control" required asp-for="Employee.DateOfBirth">
+                    <span class="text-danger" asp-validation-for="Employee.DateOfBirth"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputPhone" class="form-label fw-bold">Số điện thoại</label>
+                    <input class="form-control" maxlength="12" required asp-for="Employee.PhoneNumber">
+                    <span class="text-danger" asp-validation-for="Employee.PhoneNumber"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">CMND / CCCD</label>
+                    <input class="form-control" required asp-for="Employee.Identification">
+                    <span class="text-danger" asp-validation-for="Employee.Identification"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputGender" class="form-label fw-bold">Giới tính</label>
+                    <select style="background-color: #F3F3F3;" required class="form-control" asp-for="Employee.Gender">
+                        <option value="" disabled selected>...Chọn giới tính</option>
+                        <option value="1">Nam</option>
+                        <option value="2">Nữ</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="Employee.Gender"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputRole" class="form-label fw-bold">Vai trò</label>
+                    <select style="background-color: #F3F3F3;" required class="form-control" asp-for="Employee.RoleID">
+                        <option value="" disabled>...Chọn vai trò trên hệ thống</option>
+                        @foreach (var r in Model.Roles)
+                        {
+                            @if (!r.isHidden)
+                            {
+                                <option value="@r.RoleID">@r.RoleName</option>
+                            }
+                        }
+                    </select>
+                    <span class="text-danger" asp-validation-for="Employee.RoleID"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputRole" class="form-label fw-bold">Chức vụ</label>
+                    <select style="background-color: #F3F3F3;" required class="form-control" asp-for="Employee.PositionID">
+                        <option value="" disabled>...Chọn chức vụ trong công ty</option>
+                        @foreach (var p in Model.Positions)
+                        {
+
+                            @if (!p.isHidden)
+                            {
+                                <option value="@p.PositionID">@p.PositionName</option>
+                            }
+                        }
+                    </select>
+                    <span class="text-danger" asp-validation-for="Employee.PositionID"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputEmail" class="form-label fw-bold">Địa chỉ thường trú</label>
+                    <textarea style="background-color: #F3F3F3;" class="form-control" required asp-for="Employee.Address"></textarea>
+                    <span class="text-danger" asp-validation-for="Employee.Address"></span>
+                </div>
+
+                <div class="col-md-12">
+                    <label for="note" class="form-label fw-bold">Ghi chú</label>
+                    <textarea style="background-color: #F3F3F3;" class="form-control" asp-for="Employee.Note"></textarea>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <label class="mb-3 mr-1 form-label fw-bold" for="Status">Trạng thái tài khoản: </label>
+                    <div>
+                        <input type="radio" class="btn-check " id="false" asp-for="Employee.IsLocked" value="false" autocomplete="off" required>
+                        <label class="btn btn-sm btn-outline-success text-light" asp-for="Employee.IsLocked" id="false-label" for="false">Hoạt động</label>
+
+                        <input type="radio" class="btn-check " id="true" asp-for="Employee.IsLocked" value="true" autocomplete="off" required>
+                        <label class="btn btn-sm btn-outline-danger text-light" asp-for="Employee.IsLocked" id="true-label" for="true">Khoá</label>
+                    </div>
+                </div>
+                <div class="col-md-5" style="margin:auto; padding:20px 0;">
+                    <div class="loading" id="loading">
+                        <img src="https://icon-library.com/images/spinner-icon-gif/spinner-icon-gif-10.jpg" alt="loading">
+                    </div>
+                    <button class="add_cus" type="submit" onclick="updatePosition()">
+                        Cập nhật thông tin
+
+                    </button>
+                </div>
+            </div>
+        </div>
+        @**@
+    </form>
+
+</div>
+
+
+<script>
+    const iconLoading = document.getElementById("loading");
+
+    const showLoading = () => {
+        iconLoading.style.display = "flex";
+    };
+
+    const hideLoading = () => {
+        iconLoading.style.display = "none";
+    };
+
+    const updatePosition = () => {
+        showLoading(); // Show loading spinner when the button is clicked
+
+        // You can perform additional logic here before or after the form submission
+        // For example, submit the form programmatically
+        document.querySelector('form').submit();
+
+        // If you want to prevent the form from submitting immediately, you can remove the form submission line
+
+        // Hide loading spinner after the form submission is complete
+        setTimeout(() => {
+            hideLoading(); // Hide loading icon after some time (replace this with your actual logic)
+        }, 1000);
+    };
+</script>
